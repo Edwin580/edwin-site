@@ -3,14 +3,22 @@ import { roles, toIndex, fmt, duration, type YM } from '../data/profile';
 
 const now = new Date();
 const nowYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}` as YM;
+const nowI = toIndex(nowYM);
 
 const lo = Math.min(...roles.map((r) => toIndex(r.start)));
-const hi = Math.max(toIndex(nowYM), ...roles.map((r) => toIndex(r.end))) + 1;
+const hi = Math.max(nowI, ...roles.map((r) => toIndex(r.end))) + 1;
 const span = hi - lo;
 const pct = (i: number) => `${(((i - lo) / span) * 100).toFixed(3)}%`;
 
-const years: number[] = [];
-for (let y = Math.ceil(lo / 12); y * 12 < hi; y++) years.push(y);
+const months = Array.from({ length: span }, (_, k) => lo + k);
+
+// Stats: distinct months worked (overlaps count once) and peak concurrency.
+const load = months.map((m) => roles.filter((r) => toIndex(r.start) <= m && m <= toIndex(r.end)).length);
+const stats = [
+  { v: String(roles.length).padStart(2, '0'), k: 'roles' },
+  { v: String(load.filter(Boolean).length), k: 'months' },
+  { v: `${Math.max(...load)}×`, k: 'concurrent' },
+];
 ---
 
 <figure class="timeline" aria-labelledby="timeline-caption">
@@ -18,82 +26,121 @@ for (let y = Math.ceil(lo / 12); y * 12 < hi; y++) years.push(y);
     Timeline of roles from {fmt(roles.at(-1)!.start)} to {fmt(roles[0]!.end)}
   </figcaption>
 
-  <div class="axis mono muted" aria-hidden="true">
-    {years.map((y) => <span style={`--x:${pct(y * 12)}`}>{y}</span>)}
-    <span class="now" style={`--x:${pct(toIndex(nowYM) + 0.5)}`}>now</span>
-  </div>
-
-  <div class="plot">
-    <div class="grid" aria-hidden="true">
-      {years.map((y) => <span style={`--x:${pct(y * 12)}`} />)}
-      <span class="now" style={`--x:${pct(toIndex(nowYM) + 0.5)}`} />
-    </div>
-
-  <ol role="list">
+  <dl class="stats">
     {
-      roles.map((r, i) => (
-        <li style={`--s:${pct(toIndex(r.start))};--e:${pct(toIndex(r.end) + 1)};--i:${i}`}>
-          <a href={`#${r.id}`} class="row" data-role={r.id}>
-            <span class="label mono">{r.short}</span>
-            <span class="track">
-              <span class={`bar ${r.kind}`}>
-                <span class="sr-only">
-                  {r.org}, {fmt(r.start)} to {fmt(r.end)}
-                </span>
-              </span>
-              <span class:list={['len mono', { flip: toIndex(r.start) - lo > span / 2 }]} aria-hidden="true">{duration(r)}mo</span>
-            </span>
-          </a>
-        </li>
+      stats.map((s) => (
+        <div>
+          <dt class="mono muted">{s.k}</dt>
+          <dd>{s.v}</dd>
+        </div>
       ))
     }
-  </ol>
+  </dl>
+
+  <div
+    class="plot"
+    tabindex="0"
+    role="slider"
+    aria-label="Scrub timeline by month"
+    aria-valuemin={lo}
+    aria-valuemax={hi - 1}
+    aria-valuenow={nowI}
+    aria-valuetext={fmt(nowYM)}
+    data-lo={lo}
+    data-span={span}
+  >
+    <div class="grid" aria-hidden="true">
+      {months.filter((m) => m % 12 === 0).map((m) => <span class="year" style={`--x:${pct(m)}`} />)}
+      <span class="now" style={`--x:${pct(nowI + 0.5)}`} />
+      <span class="cursor"><b class="mono"></b></span>
+    </div>
+
+    <ol role="list">
+      {
+        roles.map((r) => (
+          <li
+            style={`--s:${pct(toIndex(r.start))};--e:${pct(toIndex(r.end) + 1)}`}
+            data-s={toIndex(r.start)}
+            data-e={toIndex(r.end)}
+          >
+            <a href={`#${r.id}`} class="row" data-role={r.id} tabindex="-1">
+              <span class="label mono">{r.short}</span>
+              <span class="track">
+                <span class={`bar ${r.kind}`}>
+                  <span class="sr-only">
+                    {r.org}, {fmt(r.start)} to {fmt(r.end)}
+                  </span>
+                </span>
+                <span class:list={['len mono', { flip: toIndex(r.start) - lo > span / 2 }]} aria-hidden="true">
+                  {duration(r)}mo
+                </span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="axis mono muted" aria-hidden="true">
+      <span class="ticks">
+        {months.map((m) => <i class:list={{ y: m % 12 === 0 }} style={`--x:${pct(m)}`} />)}
+      </span>
+      {months.filter((m) => m % 12 === 0).map((m) => <span class="yl" style={`--x:${pct(m)}`}>{m / 12}</span>)}
+      <span class="yl now" style={`--x:${pct(nowI + 0.5)}`}>now</span>
+    </div>
   </div>
 
   <ul class="legend mono muted" role="list" aria-hidden="true">
-    <li><i class="engineering" /> engineering</li>
-    <li><i class="data" /> data</li>
-    <li><i class="research" /> research</li>
+    <li><i class="engineering"></i> engineering</li>
+    <li><i class="data"></i> data</li>
+    <li><i class="research"></i> research</li>
   </ul>
 </figure>
 
 <style>
   .timeline {
     --label: 5.5rem;
-    position: relative;
     display: grid;
-    gap: 0.4rem;
+    gap: 1.25rem;
   }
 
-  .axis,
-  .grid {
-    position: relative;
-    margin-left: var(--label);
+  /* ---------- stats ---------- */
+
+  .stats {
+    display: flex;
+    gap: clamp(1.5rem, 6vw, 3.5rem);
   }
 
-  .axis {
-    height: 1.2rem;
+  .stats div {
+    display: flex;
+    flex-direction: column-reverse;
   }
 
-  .axis span {
-    position: absolute;
-    left: var(--x);
+  .stats dd {
+    font-size: clamp(1.6rem, 1.2rem + 1.8vw, 2.4rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
   }
 
-  .axis .now {
-    translate: -100% 0;
-    padding-right: 0.3rem;
-    color: var(--accent);
+  .stats dt {
+    margin-top: 0.35rem;
   }
+
+  /* ---------- plot ---------- */
 
   .plot {
     position: relative;
+    padding-top: 1.75rem;
+    touch-action: pan-y;
+    cursor: crosshair;
+    border-radius: 6px;
   }
 
   .grid {
     position: absolute;
-    inset: 0 0 0 var(--label);
-    margin: 0;
+    inset: 1.75rem 0 1.6rem var(--label);
     pointer-events: none;
   }
 
@@ -102,11 +149,37 @@ for (let y = Math.ceil(lo / 12); y * 12 < hi; y++) years.push(y);
     top: 0;
     bottom: 0;
     left: var(--x);
+  }
+
+  .grid .year {
     border-left: 1px dashed var(--faint);
   }
 
   .grid .now {
-    border-left: 1px solid var(--accent);
+    border-left: 1px solid color-mix(in oklch, var(--accent) 60%, transparent);
+  }
+
+  .grid .cursor {
+    border-left: 1px solid var(--fg);
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 2;
+  }
+
+  .cursor b {
+    position: absolute;
+    bottom: 100%;
+    translate: -50% -0.25rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    background: var(--fg);
+    color: var(--bg);
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .plot.scrub .cursor {
+    opacity: 1;
   }
 
   ol {
@@ -121,7 +194,7 @@ for (let y = Math.ceil(lo / 12); y * 12 < hi; y++) years.push(y);
     align-items: center;
     height: 1.75rem;
     text-decoration: none;
-    border-radius: 4px;
+    cursor: inherit;
   }
 
   .label {
@@ -146,7 +219,7 @@ for (let y = Math.ceil(lo / 12); y * 12 < hi; y++) years.push(y);
     translate: 0 -50%;
     border-radius: 2px;
     transform-origin: left;
-    transition: height 0.25s var(--ease), background-color 0.2s;
+    transition: height 0.25s var(--ease), opacity 0.2s;
   }
 
   .engineering {
@@ -181,33 +254,65 @@ for (let y = Math.ceil(lo / 12); y * 12 < hi; y++) years.push(y);
     right: calc(100% - var(--s) + 0.5rem);
   }
 
-  .row:hover .label,
-  .row:focus-visible .label,
-  .row.is-active .label {
+  /* A row is lit when hovered, linked from the list, or under the scrubber. */
+  li.on .label,
+  .row:is(:hover, .is-active) .label {
     color: var(--fg);
   }
 
-  .row:hover .bar,
-  .row:focus-visible .bar,
-  .row.is-active .bar {
+  li.on .bar,
+  .row:is(:hover, .is-active) .bar {
     height: 1rem;
   }
 
-  .row:hover .len,
-  .row:focus-visible .len,
+  li.on .len,
   .row.is-active .len {
     opacity: 1;
   }
 
-  /* Dim siblings while one row is in focus. */
-  ol:has(.row:hover, .row.is-active) .row:not(:hover, .is-active) .bar {
-    opacity: 0.35;
+  .plot.scrub li:not(.on) .bar,
+  .plot:not(.scrub) ol:has(.row.is-active) .row:not(.is-active) .bar {
+    opacity: 0.3;
+  }
+
+  /* ---------- axis ---------- */
+
+  .axis {
+    position: relative;
+    height: 1.6rem;
+    margin-left: var(--label);
+    font-size: 0.7rem;
+  }
+
+  .ticks i {
+    position: absolute;
+    top: 0;
+    left: var(--x);
+    height: 3px;
+    border-left: 1px solid var(--faint);
+  }
+
+  .ticks i.y {
+    height: 7px;
+    border-color: var(--muted);
+  }
+
+  .yl {
+    position: absolute;
+    top: 0.5rem;
+    left: var(--x);
+    translate: 0.25rem 0;
+  }
+
+  .yl.now {
+    translate: -100% 0;
+    color: var(--accent);
   }
 
   .legend {
     display: flex;
     gap: 1rem;
-    margin: 0.6rem 0 0 var(--label);
+    margin-left: var(--label);
     font-size: 0.7rem;
   }
 
@@ -245,3 +350,61 @@ for (let y = Math.ceil(lo / 12); y * 12 < hi; y++) years.push(y);
     }
   }
 </style>
+
+<script>
+  import { fmtIndex } from '../scripts/dates';
+
+  const plot = document.querySelector<HTMLElement>('.timeline .plot');
+  if (plot) {
+    const grid = plot.querySelector<HTMLElement>('.grid')!;
+    const cursor = grid.querySelector<HTMLElement>('.cursor')!;
+    const tag = cursor.querySelector('b')!;
+    const rows = [...plot.querySelectorAll<HTMLLIElement>('li[data-s]')];
+    const labels = rows.map((r) => r.querySelector('.label')?.textContent ?? '');
+    const lo = Number(plot.dataset.lo);
+    const span = Number(plot.dataset.span);
+    let month = Number(plot.getAttribute('aria-valuenow'));
+
+    const show = (m: number) => {
+      month = Math.min(lo + span - 1, Math.max(lo, m));
+      cursor.style.left = `${((month - lo + 0.5) / span) * 100}%`;
+      tag.textContent = fmtIndex(month);
+      const active: string[] = [];
+      rows.forEach((r, i) => {
+        const on = Number(r.dataset.s) <= month && month <= Number(r.dataset.e);
+        r.classList.toggle('on', on);
+        if (on) active.push(labels[i]!);
+      });
+      plot.classList.add('scrub');
+      plot.setAttribute('aria-valuenow', String(month));
+      plot.setAttribute('aria-valuetext', `${fmtIndex(month)}: ${active.join(', ') || 'no roles'}`);
+    };
+
+    const hide = () => {
+      plot.classList.remove('scrub');
+      rows.forEach((r) => r.classList.remove('on'));
+    };
+
+    const fromPointer = (e: PointerEvent) => {
+      const r = grid.getBoundingClientRect();
+      const f = (e.clientX - r.left) / r.width;
+      if (f < 0 || f >= 1) return hide();
+      show(lo + Math.floor(f * span));
+    };
+
+    plot.addEventListener('pointermove', fromPointer);
+    plot.addEventListener('pointerdown', fromPointer);
+    plot.addEventListener('pointerleave', () => document.activeElement !== plot && hide());
+    plot.addEventListener('focus', () => show(month));
+    plot.addEventListener('blur', hide);
+    plot.addEventListener('keydown', (e) => {
+      const steps: Record<string, number> = { ArrowLeft: -1, ArrowRight: 1, ArrowDown: -1, ArrowUp: 1, PageDown: -12, PageUp: 12 };
+      const step = steps[e.key];
+      if (step) show(month + step);
+      else if (e.key === 'Home') show(lo);
+      else if (e.key === 'End') show(lo + span - 1);
+      else return;
+      e.preventDefault();
+    });
+  }
+</script>

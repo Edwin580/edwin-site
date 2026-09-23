@@ -1,11 +1,13 @@
 ---
 import { execSync } from 'node:child_process';
+import { Picture } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Field from '../components/Field.astro';
 import Timeline from '../components/Timeline.astro';
 import Experience from '../components/Experience.astro';
 import Palette from '../components/Palette.astro';
-import { profile, projects, education, skills } from '../data/profile';
+import portrait from '../assets/edwin.jpg';
+import { profile, projects } from '../data/profile';
 
 const sha = (() => {
   if (process.env.GITHUB_SHA) return process.env.GITHUB_SHA.slice(0, 7);
@@ -17,6 +19,7 @@ const sha = (() => {
 })();
 const built = new Date().toISOString().slice(0, 10);
 const year = new Date().getFullYear();
+const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume}`;
 ---
 
 <Base>
@@ -27,28 +30,43 @@ const year = new Date().getFullYear();
     <nav class="bar wrap mono" aria-label="Site">
       <a href="#top" class="mark" aria-label="Home">EC</a>
       <div class="tools">
-        <span class="clock muted" data-tz={profile.timezone}>
-          {profile.location} · <time>--:--</time>
-        </span>
-        <button type="button" class="icon" data-action="theme" aria-label="Toggle theme">
+        <button type="button" data-action="theme" aria-label="Toggle theme">
           <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
             <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
             <path d="M8 1.75a6.25 6.25 0 0 1 0 12.5z" fill="currentColor"></path>
           </svg>
         </button>
-        <button type="button" class="k" data-action="palette" aria-label="Open command menu">
-          <kbd data-mod>⌘</kbd><kbd>K</kbd>
+        <button type="button" data-action="palette" aria-label="Open command menu">
+          <span class="keys"><kbd data-mod>⌘</kbd><kbd>K</kbd></span>
+          <svg class="menu" viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
+            <path d="M2 4.5h12M2 8h12M2 11.5h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+          </svg>
         </button>
       </div>
     </nav>
 
     <div class="intro wrap" id="top">
+      <Picture
+        src={portrait}
+        alt={profile.name}
+        widths={[96, 192, 288]}
+        sizes="96px"
+        formats={['avif', 'webp']}
+        loading="eager"
+        fetchpriority="high"
+        class="portrait"
+      />
       <h1>{profile.name}</h1>
-      <p class="lede">
-        <span class="role">{profile.tagline}.</span>
-        <span class="muted">{profile.about}</span>
-      </p>
+      <p class="sub mono muted">{profile.tagline} · {profile.about}</p>
       <ul class="links mono" role="list">
+        <li>
+          <a class="cta" href={resume} download>
+            Resume
+            <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
+              <path d="M8 2v9m0 0L4.5 7.5M8 11l3.5-3.5M3 14h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </a>
+        </li>
         <li><a href={profile.links.github} rel="me noopener" target="_blank">GitHub ↗</a></li>
         <li><a href={profile.links.linkedin} rel="me noopener" target="_blank">LinkedIn ↗</a></li>
         <li><a href={`mailto:${profile.email}`}>Email</a></li>
@@ -83,18 +101,6 @@ const year = new Date().getFullYear();
           ))
         }
       </ul>
-    </section>
-
-    <section id="more" aria-labelledby="h-more">
-      <h2 id="h-more" class="mono"><span>04</span> Education & Stack</h2>
-      <dl class="facts">
-        <dt class="mono muted">Education</dt>
-        <dd>{education.school} <span class="muted">· {education.degree}</span></dd>
-        <dt class="mono muted">Stack</dt>
-        <dd class="chips">
-          {skills.map((s) => <span class="mono">{s}</span>)}
-        </dd>
-      </dl>
     </section>
   </main>
 
@@ -135,7 +141,7 @@ const year = new Date().getFullYear();
   .hero {
     position: relative;
     isolation: isolate;
-    padding-bottom: clamp(3rem, 8vw, 6rem);
+    padding-bottom: clamp(2.5rem, 6vw, 4rem);
   }
 
   .hero :global(.field) {
@@ -158,17 +164,16 @@ const year = new Date().getFullYear();
   .tools {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
-  }
-
-  .clock time {
-    font-variant-numeric: tabular-nums;
+    gap: 0.4rem;
   }
 
   button {
     display: inline-flex;
     align-items: center;
     gap: 2px;
+    min-width: 2rem;
+    min-height: 2rem;
+    justify-content: center;
     padding: 0.35rem;
     border: 0;
     background: none;
@@ -182,8 +187,35 @@ const year = new Date().getFullYear();
     color: var(--fg);
   }
 
+  .menu {
+    display: none;
+  }
+
+  @media (pointer: coarse) {
+    .keys {
+      display: none;
+    }
+
+    .menu {
+      display: block;
+    }
+  }
+
   .intro {
-    padding-top: clamp(4rem, 14vw, 9rem);
+    padding-top: clamp(2.5rem, 9vw, 5.5rem);
+  }
+
+  .intro :global(.portrait) {
+    display: block;
+    width: 5.5rem;
+    height: 5.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 1.4rem;
+    object-fit: cover;
+    background: var(--surface);
+    box-shadow:
+      0 0 0 1px color-mix(in oklch, var(--fg) 8%, transparent),
+      0 12px 30px -12px rgb(0 0 0 / 0.35);
   }
 
   h1 {
@@ -193,28 +225,47 @@ const year = new Date().getFullYear();
     line-height: 1;
   }
 
-  .lede {
-    margin-top: 1.1rem;
-    max-width: 32rem;
-    font-size: 1.08em;
-    text-wrap: pretty;
-  }
-
-  .role {
-    font-weight: 500;
+  .sub {
+    margin-top: 0.9rem;
+    font-size: 0.9rem;
   }
 
   .links {
     display: flex;
     flex-wrap: wrap;
-    gap: 1.25rem;
-    margin-top: 1.5rem;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    margin-top: 1.75rem;
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    background: var(--fg);
+    color: var(--bg);
+    text-decoration: none;
+    transition: background-color 0.2s, translate 0.2s var(--ease);
+  }
+
+  .cta:hover {
+    background: var(--accent);
+  }
+
+  .cta:hover svg {
+    translate: 0 1px;
+  }
+
+  .cta svg {
+    transition: translate 0.2s var(--ease);
   }
 
   /* ---------- sections ---------- */
 
   section {
-    padding-block: clamp(2rem, 6vw, 3.5rem);
+    padding-block: clamp(2rem, 5vw, 3rem);
   }
 
   h2 {
@@ -266,36 +317,14 @@ const year = new Date().getFullYear();
     translate: 3px -3px;
   }
 
-  .facts {
-    display: grid;
-    grid-template-columns: 9.5rem 1fr;
-    gap: 1rem 1.5rem;
-  }
-
-  .facts dt {
-    padding-top: 0.2rem;
-  }
-
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-
-  .chips span {
-    padding: 0.15rem 0.5rem;
-    border: 1px solid var(--faint);
-    border-radius: 999px;
-  }
-
   footer {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 0.5rem;
-    padding-block: 3rem 2.5rem;
+    padding-block: 2.5rem;
     border-top: 1px solid var(--faint);
-    margin-top: 2rem;
+    margin-top: 1.5rem;
   }
 
   footer a {
@@ -326,28 +355,19 @@ const year = new Date().getFullYear();
   }
 
   @media (max-width: 36rem) {
-    .clock {
-      display: none;
+    .intro :global(.portrait) {
+      width: 4.5rem;
+      height: 4.5rem;
+      border-radius: 1.1rem;
     }
 
-    .projects a,
-    .facts {
+    .projects a {
       grid-template-columns: 1fr auto;
     }
 
     .projects .blurb,
-    .projects .tags,
-    .facts dd {
+    .projects .tags {
       grid-column: 1 / -1;
-    }
-
-    .facts dt {
-      grid-column: 1 / -1;
-      padding: 0;
-    }
-
-    .facts dd {
-      margin-bottom: 0.5rem;
     }
   }
 </style>
@@ -355,23 +375,8 @@ const year = new Date().getFullYear();
 <script>
   import { toggleTheme } from '../scripts/theme';
 
-  // Live local clock.
-  const clock = document.querySelector<HTMLElement>('.clock');
-  const time = clock?.querySelector('time');
-  if (clock && time) {
-    const f = new Intl.DateTimeFormat('en-US', {
-      timeZone: clock.dataset.tz,
-      hour: 'numeric',
-      minute: '2-digit',
-      timeZoneName: 'short',
-    });
-    const tick = () => (time.textContent = f.format(new Date()));
-    tick();
-    setInterval(tick, 15_000);
-  }
-
   // Show the platform's modifier key.
-  if (!/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) {
+  if (!/Mac|iPhone|iPad/.test(navigator.userAgent)) {
     document.querySelectorAll('[data-mod]').forEach((k) => (k.textContent = 'Ctrl'));
   }
 

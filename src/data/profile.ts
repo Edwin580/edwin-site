@@ -1,5 +1,7 @@
 /** Single source of truth for everything rendered on the site. */
 
+import { fmtIndex } from '../scripts/dates';
+
 /** Year-month, e.g. "2025-05". */
 export type YM = `${number}-${string}`;
 
@@ -27,9 +29,9 @@ export interface Project {
 export const profile = {
   name: 'Edwin Cortazo',
   tagline: 'Software engineer',
-  about: 'Computer Science & Cognitive Science at Vassar. I build product, platforms and data systems.',
+  about: 'CS & Cognitive Science, Vassar College',
   location: 'New York',
-  timezone: 'America/New_York',
+  resume: 'Edwin_Cortazo_Resume.pdf',
   email: 'edwincortazo@gmail.com',
   links: {
     github: 'https://github.com/Edwin580',
@@ -152,17 +154,6 @@ export const projects: Project[] = [
   },
 ];
 
-export const education = {
-  school: 'Vassar College',
-  degree: 'B.A. Computer Science & Cognitive Science',
-};
-
-export const skills = [
-  'TypeScript', 'Python', 'Java', 'Kotlin', 'SQL', 'C++',
-  'React', 'Spring Boot', 'Flask', 'Node.js', 'TensorFlow',
-  'PostgreSQL', 'Redis', 'Docker', 'Kubernetes', 'AWS', 'GCP',
-];
-
 /* ---------- date helpers (pure, build-time) ---------- */
 
 export const toIndex = (ym: YM): number => {
@@ -170,12 +161,7 @@ export const toIndex = (ym: YM): number => {
   return y * 12 + (m - 1);
 };
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-export const fmt = (ym: YM): string => {
-  const i = toIndex(ym);
-  return `${MONTHS[i % 12]} ${Math.floor(i / 12)}`;
-};
+export const fmt = (ym: YM): string => fmtIndex(toIndex(ym));
 
 /** Inclusive month count. */
 export const duration = (r: Role): number => toIndex(r.end) - toIndex(r.start) + 1;

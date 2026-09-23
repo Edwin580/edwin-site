@@ -125,6 +125,6 @@
       px = e.clientX - r.left;
       py = e.clientY - r.top;
     }, { passive: true });
-    document.addEventListener('pointerleave', () => { px = py = -1e4; });
+    document.addEventListener('pointerout', (e) => { if (!e.relatedTarget) px = py = -1e4; });
   }
 </script>

@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
+import { getImage } from 'astro:assets';
 import { profile } from '../data/profile';
+import portrait from '../assets/edwin.jpg';
 
 interface Props {
   title?: string;
@@ -9,11 +11,14 @@ interface Props {
 
 const {
   title = `${profile.name} — ${profile.tagline}`,
-  description = profile.about,
+  description = `${profile.tagline} in ${profile.location}. ${profile.about}.`,
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const favicon = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}favicon.svg`;
+
+const og = await getImage({ src: portrait, width: 600, height: 600, format: 'jpg' });
+const ogUrl = new URL(og.src, Astro.site).href;
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -22,6 +27,7 @@ const jsonLd = {
   jobTitle: profile.tagline,
   email: `mailto:${profile.email}`,
   url: canonical.href,
+  image: ogUrl,
   sameAs: Object.values(profile.links),
   alumniOf: { '@type': 'CollegeOrUniversity', name: 'Vassar College' },
 };
@@ -44,6 +50,10 @@ const jsonLd = {
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:width" content="600" />
+    <meta property="og:image:height" content="600" />
+    <meta property="og:image:alt" content={profile.name} />
     <meta name="twitter:card" content="summary" />
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />

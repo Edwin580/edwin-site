@@ -1,6 +1,8 @@
 ---
 import { profile } from '../data/profile';
 
+const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume}`;
+
 interface Command {
   id: string;
   label: string;
@@ -15,6 +17,7 @@ const commands: Command[] = [
   { id: 'nav-projects', label: 'Projects', hint: '#projects', group: 'Navigate', href: '#projects' },
   { id: 'link-github', label: 'GitHub', hint: '↗', group: 'Links', href: profile.links.github },
   { id: 'link-linkedin', label: 'LinkedIn', hint: '↗', group: 'Links', href: profile.links.linkedin },
+  { id: 'resume', label: 'Download resume', hint: 'PDF', group: 'Actions', href: resume },
   { id: 'email', label: 'Copy email', hint: profile.email, group: 'Actions' },
   { id: 'theme', label: 'Toggle theme', hint: 'T', group: 'Actions' },
 ];
@@ -174,6 +177,9 @@ const commands: Command[] = [
     if (href?.startsWith('#')) {
       document.querySelector(href)?.scrollIntoView();
       history.replaceState(null, '', href);
+    } else if (el.id === 'resume' && href) {
+      const a = Object.assign(document.createElement('a'), { href, download: '' });
+      a.click();
     } else if (href) {
       window.open(href, '_blank', 'noopener');
     } else if (el.id === 'email') {
