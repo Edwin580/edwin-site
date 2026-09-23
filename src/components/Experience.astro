@@ -1,0 +1,119 @@
+---
+import { roles, fmt, duration } from '../data/profile';
+
+const range = (r: (typeof roles)[number]) => {
+  const [s, e] = [fmt(r.start), fmt(r.end)];
+  // Collapse the year when a role starts and ends in the same one.
+  return s.slice(-4) === e.slice(-4) ? `${s.slice(0, 3)} – ${e}` : `${s} – ${e}`;
+};
+---
+
+<ol class="experience" role="list">
+  {
+    roles.map((r) => (
+      <li id={r.id} data-role={r.id}>
+        <p class="when mono muted">
+          <time datetime={r.start}>{range(r)}</time>
+          <span class="dur">{duration(r)} mo</span>
+        </p>
+        <div class="what">
+          <h3>
+            {r.org} <span class="muted">· {r.title}</span>
+          </h3>
+          <ul class="highlights" role="list">
+            {r.highlights.map((h) => <li>{h}</li>)}
+          </ul>
+          <p class="stack mono muted">{r.stack.join(' / ')}</p>
+        </div>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .experience {
+    display: grid;
+  }
+
+  .experience > li {
+    display: grid;
+    grid-template-columns: 9.5rem 1fr;
+    gap: 0.25rem 1.5rem;
+    padding: 1.25rem 0;
+    border-top: 1px solid var(--faint);
+    position: relative;
+    transition: opacity 0.25s var(--ease);
+  }
+
+  .experience > li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: -1px;
+    height: 1px;
+    width: 100%;
+    background: var(--accent);
+    scale: 0 1;
+    transform-origin: left;
+    transition: scale 0.5s var(--ease);
+  }
+
+  .experience > li:is(:hover, :target, .is-active)::before {
+    scale: 1 1;
+  }
+
+  .experience:has(> li.is-active) > li:not(.is-active) {
+    opacity: 0.45;
+  }
+
+  .when {
+    display: flex;
+    flex-direction: column;
+    padding-top: 0.2rem;
+  }
+
+  .dur {
+    opacity: 0.7;
+  }
+
+  h3 {
+    font-size: var(--step-0);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .highlights {
+    margin-top: 0.35rem;
+    display: grid;
+    gap: 0.15rem;
+  }
+
+  .highlights li {
+    position: relative;
+    padding-left: 1rem;
+    color: color-mix(in oklch, var(--fg) 80%, var(--bg));
+  }
+
+  .highlights li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--muted);
+    font-size: 0.85em;
+  }
+
+  .stack {
+    margin-top: 0.5rem;
+  }
+
+  @media (max-width: 36rem) {
+    .experience > li {
+      grid-template-columns: 1fr;
+    }
+
+    .when {
+      flex-direction: row;
+      gap: 0.75rem;
+    }
+  }
+</style>

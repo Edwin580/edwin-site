@@ -1,0 +1,403 @@
+---
+import { execSync } from 'node:child_process';
+import Base from '../layouts/Base.astro';
+import Field from '../components/Field.astro';
+import Timeline from '../components/Timeline.astro';
+import Experience from '../components/Experience.astro';
+import Palette from '../components/Palette.astro';
+import { profile, projects, education, skills } from '../data/profile';
+
+const sha = (() => {
+  if (process.env.GITHUB_SHA) return process.env.GITHUB_SHA.slice(0, 7);
+  try {
+    return execSync('git rev-parse --short HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+  } catch {
+    return 'dev';
+  }
+})();
+const built = new Date().toISOString().slice(0, 10);
+const year = new Date().getFullYear();
+---
+
+<Base>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="hero">
+    <Field />
+    <nav class="bar wrap mono" aria-label="Site">
+      <a href="#top" class="mark" aria-label="Home">EC</a>
+      <div class="tools">
+        <span class="clock muted" data-tz={profile.timezone}>
+          {profile.location} · <time>--:--</time>
+        </span>
+        <button type="button" class="icon" data-action="theme" aria-label="Toggle theme">
+          <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
+            <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
+            <path d="M8 1.75a6.25 6.25 0 0 1 0 12.5z" fill="currentColor"></path>
+          </svg>
+        </button>
+        <button type="button" class="k" data-action="palette" aria-label="Open command menu">
+          <kbd data-mod>⌘</kbd><kbd>K</kbd>
+        </button>
+      </div>
+    </nav>
+
+    <div class="intro wrap" id="top">
+      <h1>{profile.name}</h1>
+      <p class="lede">
+        <span class="role">{profile.tagline}.</span>
+        <span class="muted">{profile.about}</span>
+      </p>
+      <ul class="links mono" role="list">
+        <li><a href={profile.links.github} rel="me noopener" target="_blank">GitHub ↗</a></li>
+        <li><a href={profile.links.linkedin} rel="me noopener" target="_blank">LinkedIn ↗</a></li>
+        <li><a href={`mailto:${profile.email}`}>Email</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main id="main" class="wrap">
+    <section id="timeline" aria-labelledby="h-timeline">
+      <h2 id="h-timeline" class="mono"><span>01</span> Timeline</h2>
+      <Timeline />
+    </section>
+
+    <section id="experience" aria-labelledby="h-experience">
+      <h2 id="h-experience" class="mono"><span>02</span> Experience</h2>
+      <Experience />
+    </section>
+
+    <section id="projects" aria-labelledby="h-projects">
+      <h2 id="h-projects" class="mono"><span>03</span> Projects</h2>
+      <ul class="projects" role="list">
+        {
+          projects.map((p) => (
+            <li>
+              <a href={p.href} target="_blank" rel="noopener">
+                <span class="name">{p.name}</span>
+                <span class="blurb muted">{p.blurb}</span>
+                <span class="mono muted tags">{p.stack.join(' / ')}</span>
+                <span class="arrow" aria-hidden="true">↗</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section id="more" aria-labelledby="h-more">
+      <h2 id="h-more" class="mono"><span>04</span> Education & Stack</h2>
+      <dl class="facts">
+        <dt class="mono muted">Education</dt>
+        <dd>{education.school} <span class="muted">· {education.degree}</span></dd>
+        <dt class="mono muted">Stack</dt>
+        <dd class="chips">
+          {skills.map((s) => <span class="mono">{s}</span>)}
+        </dd>
+      </dl>
+    </section>
+  </main>
+
+  <footer class="wrap mono muted">
+    <span>© {year} {profile.name}</span>
+    <span>
+      <a href={`https://github.com/Edwin580/edwin-site/commit/${sha}`}>{sha}</a> · {built}
+    </span>
+  </footer>
+
+  <div class="toast mono" role="status" aria-live="polite"></div>
+  <Palette />
+</Base>
+
+<style>
+  .wrap {
+    width: min(var(--measure), 100% - 2 * var(--gutter));
+    margin-inline: auto;
+  }
+
+  .skip {
+    position: absolute;
+    left: 1rem;
+    top: -3rem;
+    z-index: 10;
+    padding: 0.5rem 0.8rem;
+    background: var(--fg);
+    color: var(--bg);
+    border-radius: 6px;
+  }
+
+  .skip:focus {
+    top: 1rem;
+  }
+
+  /* ---------- hero ---------- */
+
+  .hero {
+    position: relative;
+    isolation: isolate;
+    padding-bottom: clamp(3rem, 8vw, 6rem);
+  }
+
+  .hero :global(.field) {
+    z-index: -1;
+  }
+
+  .bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-block: 1.5rem;
+  }
+
+  .mark {
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+
+  .tools {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .clock time {
+    font-variant-numeric: tabular-nums;
+  }
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 0.35rem;
+    border: 0;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: color 0.2s;
+  }
+
+  button:hover {
+    color: var(--fg);
+  }
+
+  .intro {
+    padding-top: clamp(4rem, 14vw, 9rem);
+  }
+
+  h1 {
+    font-size: var(--step-3);
+    font-weight: 600;
+    letter-spacing: -0.045em;
+    line-height: 1;
+  }
+
+  .lede {
+    margin-top: 1.1rem;
+    max-width: 32rem;
+    font-size: 1.08em;
+    text-wrap: pretty;
+  }
+
+  .role {
+    font-weight: 500;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+  }
+
+  /* ---------- sections ---------- */
+
+  section {
+    padding-block: clamp(2rem, 6vw, 3.5rem);
+  }
+
+  h2 {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  h2 span {
+    color: var(--accent);
+  }
+
+  .projects {
+    display: grid;
+  }
+
+  .projects a {
+    display: grid;
+    grid-template-columns: 11rem 1fr auto;
+    gap: 0.1rem 1.5rem;
+    align-items: baseline;
+    padding: 1rem 0;
+    border-top: 1px solid var(--faint);
+    text-decoration: none;
+  }
+
+  .projects .name {
+    font-weight: 500;
+  }
+
+  .projects .tags {
+    grid-column: 2;
+  }
+
+  .projects .arrow {
+    grid-column: 3;
+    grid-row: 1;
+    color: var(--muted);
+    transition: translate 0.25s var(--ease), color 0.2s;
+  }
+
+  .projects a:hover .arrow,
+  .projects a:focus-visible .arrow {
+    color: var(--accent);
+    translate: 3px -3px;
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: 9.5rem 1fr;
+    gap: 1rem 1.5rem;
+  }
+
+  .facts dt {
+    padding-top: 0.2rem;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .chips span {
+    padding: 0.15rem 0.5rem;
+    border: 1px solid var(--faint);
+    border-radius: 999px;
+  }
+
+  footer {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-block: 3rem 2.5rem;
+    border-top: 1px solid var(--faint);
+    margin-top: 2rem;
+  }
+
+  footer a {
+    text-decoration: none;
+  }
+
+  footer a:hover {
+    color: var(--fg);
+  }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 1.5rem;
+    translate: -50% 1rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    background: var(--fg);
+    color: var(--bg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, translate 0.3s var(--ease);
+  }
+
+  .toast.show {
+    opacity: 1;
+    translate: -50% 0;
+  }
+
+  @media (max-width: 36rem) {
+    .clock {
+      display: none;
+    }
+
+    .projects a,
+    .facts {
+      grid-template-columns: 1fr auto;
+    }
+
+    .projects .blurb,
+    .projects .tags,
+    .facts dd {
+      grid-column: 1 / -1;
+    }
+
+    .facts dt {
+      grid-column: 1 / -1;
+      padding: 0;
+    }
+
+    .facts dd {
+      margin-bottom: 0.5rem;
+    }
+  }
+</style>
+
+<script>
+  import { toggleTheme } from '../scripts/theme';
+
+  // Live local clock.
+  const clock = document.querySelector<HTMLElement>('.clock');
+  const time = clock?.querySelector('time');
+  if (clock && time) {
+    const f = new Intl.DateTimeFormat('en-US', {
+      timeZone: clock.dataset.tz,
+      hour: 'numeric',
+      minute: '2-digit',
+      timeZoneName: 'short',
+    });
+    const tick = () => (time.textContent = f.format(new Date()));
+    tick();
+    setInterval(tick, 15_000);
+  }
+
+  // Show the platform's modifier key.
+  if (!/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) {
+    document.querySelectorAll('[data-mod]').forEach((k) => (k.textContent = 'Ctrl'));
+  }
+
+  document.querySelector('[data-action=theme]')?.addEventListener('click', toggleTheme);
+  document.querySelector('[data-action=palette]')?.addEventListener('click', () =>
+    document.dispatchEvent(new Event('palette:open')),
+  );
+
+  // Toasts.
+  const toast = document.querySelector<HTMLElement>('.toast')!;
+  let hide = 0;
+  document.addEventListener('toast', (e) => {
+    toast.textContent = (e as CustomEvent<string>).detail;
+    toast.classList.add('show');
+    clearTimeout(hide);
+    hide = window.setTimeout(() => toast.classList.remove('show'), 1800);
+  });
+
+  // Link timeline rows and experience entries: hovering either highlights both.
+  const linked = (id: string) => document.querySelectorAll(`[data-role="${CSS.escape(id)}"]`);
+  document.querySelectorAll<HTMLElement>('[data-role]').forEach((el) => {
+    const id = el.dataset.role!;
+    const set = (on: boolean) => linked(id).forEach((n) => n.classList.toggle('is-active', on));
+    el.addEventListener('pointerenter', () => set(true));
+    el.addEventListener('pointerleave', () => set(false));
+    el.addEventListener('focusin', () => set(true));
+    el.addEventListener('focusout', () => set(false));
+  });
+</script>
