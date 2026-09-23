@@ -20,7 +20,10 @@ export interface Project {
   name: string;
   blurb: string;
   stack: string[];
-  href: string;
+  /** Live deployment, when there is one. */
+  live?: string;
+  /** Source code or notebook. */
+  source: string;
 }
 
 export const profile = {
@@ -119,22 +122,24 @@ export const roles: Role[] = [
 
 export const projects: Project[] = [
   {
-    name: 'Music Generation',
-    blurb: 'Seq2seq LSTM trained on 2,000+ MIDI files',
-    stack: ['TensorFlow', 'Keras'],
-    href: 'https://colab.research.google.com/drive/1UsDg6tmIFOnkcv2W6baZCRSZXRJBvvjX?usp=sharing',
-  },
-  {
-    name: 'EcoHealth',
-    blurb: 'Environmental analytics for 100+ cities',
-    stack: ['React', 'Flask', 'AWS'],
-    href: 'https://github.com/DafneArreola/EcoHealth',
+    name: 'RSVP Reader',
+    blurb: 'Speed reader for EPUB, PDF and text: one word at a time, fixed focus point, in-book search',
+    stack: ['React', 'TypeScript', 'Vite', 'Web Workers'],
+    live: 'https://edwin580.github.io/RSVP-Reader/',
+    source: 'https://github.com/Edwin580/RSVP-Reader',
   },
   {
     name: 'Moral Pop-Out',
-    blurb: 'Replication study with a full-stack web experiment',
-    stack: ['JavaScript', 'R'],
-    href: 'https://github.com/Edwin580/Prolific-Experiment',
+    blurb: 'Online experiment testing whether word valence changes perceived brightness, with a results dashboard',
+    stack: ['JavaScript', 'jsPsych', 'Playwright'],
+    live: 'https://edwin580.github.io/Prolific-Experiment/',
+    source: 'https://github.com/Edwin580/Prolific-Experiment',
+  },
+  {
+    name: 'Music Generation',
+    blurb: 'Seq2seq LSTM trained on 2,000+ MIDI files',
+    stack: ['TensorFlow', 'Keras'],
+    source: 'https://colab.research.google.com/drive/1UsDg6tmIFOnkcv2W6baZCRSZXRJBvvjX?usp=sharing',
   },
 ];
 
