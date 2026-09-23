@@ -8,11 +8,11 @@ const range = (r: (typeof roles)[number]) => {
 };
 ---
 
-<ol class="experience" role="list">
+<ol class="experience cards" role="list">
   {
     roles.map((r) => (
       <li id={r.id}>
-        <article>
+        <article class="card">
           <header>
             <h3>{r.org}</h3>
             <p class="when mono muted">
@@ -25,7 +25,7 @@ const range = (r: (typeof roles)[number]) => {
           <ul class="highlights" role="list">
             {r.highlights.map((h) => <li>{h}</li>)}
           </ul>
-          <ul class="stack mono" role="list" aria-label="Stack">
+          <ul class="chips mono" role="list" aria-label="Stack">
             {r.stack.map((s) => <li>{s}</li>)}
           </ul>
         </article>
@@ -35,27 +35,6 @@ const range = (r: (typeof roles)[number]) => {
 </ol>
 
 <style>
-  .experience {
-    display: grid;
-    gap: 0.5rem;
-    margin-inline: -1.25rem;
-  }
-
-  article {
-    padding: 1.25rem;
-    border: 1px solid transparent;
-    border-radius: 14px;
-    transition:
-      background-color 0.25s var(--ease),
-      border-color 0.25s var(--ease);
-  }
-
-  article:hover,
-  li:target article {
-    background: var(--surface);
-    border-color: var(--faint);
-  }
-
   header {
     display: flex;
     flex-wrap: wrap;
@@ -103,48 +82,7 @@ const range = (r: (typeof roles)[number]) => {
     opacity: 0.85;
   }
 
-  .stack {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-    margin-top: 1rem;
-  }
-
-  .stack li {
-    padding: 0.12rem 0.55rem;
-    border: 1px solid var(--faint);
-    border-radius: 999px;
-    color: var(--muted);
-    font-size: 0.72rem;
-    background: var(--bg);
-  }
-
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      article {
-        animation: rise linear both;
-        animation-timeline: view();
-        animation-range: entry 0% entry 60%;
-      }
-    }
-  }
-
-  @keyframes rise {
-    from {
-      opacity: 0;
-      translate: 0 12px;
-    }
-  }
-
   @media (max-width: 36rem) {
-    .experience {
-      margin-inline: -0.75rem;
-    }
-
-    article {
-      padding: 1rem 0.75rem;
-    }
-
     header {
       flex-direction: column;
     }

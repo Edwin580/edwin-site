@@ -4,9 +4,10 @@ import { Picture } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Field from '../components/Field.astro';
 import Experience from '../components/Experience.astro';
+import Projects from '../components/Projects.astro';
 import Palette from '../components/Palette.astro';
 import portrait from '../assets/edwin.jpg';
-import { profile, projects } from '../data/profile';
+import { profile } from '../data/profile';
 
 const sha = (() => {
   if (process.env.GITHUB_SHA) return process.env.GITHUB_SHA.slice(0, 7);
@@ -81,20 +82,7 @@ const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume
 
     <section id="projects" aria-labelledby="h-projects">
       <h2 id="h-projects" class="mono"><span>02</span> Projects</h2>
-      <ul class="projects" role="list">
-        {
-          projects.map((p) => (
-            <li>
-              <a href={p.href} target="_blank" rel="noopener">
-                <span class="name">{p.name}</span>
-                <span class="blurb muted">{p.blurb}</span>
-                <span class="mono muted tags">{p.stack.join(' / ')}</span>
-                <span class="arrow" aria-hidden="true">↗</span>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
+      <Projects />
     </section>
   </main>
 
@@ -276,52 +264,6 @@ const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume
     color: var(--accent);
   }
 
-  .projects {
-    display: grid;
-    gap: 0.25rem;
-    margin-inline: -1.25rem;
-  }
-
-  .projects a {
-    display: grid;
-    grid-template-columns: 11rem 1fr auto;
-    gap: 0.1rem 1.5rem;
-    align-items: baseline;
-    padding: 1rem 1.25rem;
-    border: 1px solid transparent;
-    border-radius: 14px;
-    text-decoration: none;
-    transition:
-      background-color 0.25s var(--ease),
-      border-color 0.25s var(--ease);
-  }
-
-  .projects a:hover {
-    background: var(--surface);
-    border-color: var(--faint);
-  }
-
-  .projects .name {
-    font-weight: 600;
-    letter-spacing: -0.01em;
-  }
-
-  .projects .tags {
-    grid-column: 2;
-  }
-
-  .projects .arrow {
-    grid-column: 3;
-    grid-row: 1;
-    color: var(--muted);
-    transition: translate 0.25s var(--ease), color 0.2s;
-  }
-
-  .projects a:hover .arrow,
-  .projects a:focus-visible .arrow {
-    color: var(--accent);
-    translate: 3px -3px;
-  }
 
   footer {
     display: flex;
@@ -365,20 +307,6 @@ const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume
       width: 4.5rem;
       height: 4.5rem;
       border-radius: 1.1rem;
-    }
-
-    .projects {
-      margin-inline: -0.75rem;
-    }
-
-    .projects a {
-      grid-template-columns: 1fr auto;
-      padding: 1rem 0.75rem;
-    }
-
-    .projects .blurb,
-    .projects .tags {
-      grid-column: 1 / -1;
     }
   }
 </style>

@@ -121,6 +121,72 @@ a:hover {
   border: 0;
 }
 
+/* ---------- cards (experience, projects) ---------- */
+
+.cards {
+  display: grid;
+  gap: 0.5rem;
+  margin-inline: -1.25rem;
+}
+
+.card {
+  padding: 1.25rem;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  transition:
+    background-color 0.25s var(--ease),
+    border-color 0.25s var(--ease);
+}
+
+.card:hover,
+:target > .card {
+  background: var(--surface);
+  border-color: var(--faint);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 1rem;
+}
+
+.chips li {
+  padding: 0.12rem 0.55rem;
+  border: 1px solid var(--faint);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  background: var(--bg);
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .card {
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}
+
+@media (max-width: 36rem) {
+  .cards {
+    margin-inline: -0.75rem;
+  }
+
+  .card {
+    padding: 1rem 0.75rem;
+  }
+}
+
 kbd {
   font-family: var(--mono);
   font-size: 0.72rem;
