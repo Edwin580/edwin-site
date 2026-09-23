@@ -8,13 +8,10 @@ export type YM = `${number}-${string}`;
 export interface Role {
   id: string;
   org: string;
-  /** Compact label for the timeline. */
-  short: string;
   title: string;
   location: string;
   start: YM;
   end: YM;
-  kind: 'engineering' | 'data' | 'research';
   highlights: string[];
   stack: string[];
 }
@@ -29,7 +26,6 @@ export interface Project {
 export const profile = {
   name: 'Edwin Cortazo',
   tagline: 'Software engineer',
-  about: 'CS & Cognitive Science, Vassar College',
   location: 'New York',
   resume: 'Edwin_Cortazo_Resume.pdf',
   email: 'edwincortazo@gmail.com',
@@ -43,12 +39,10 @@ export const roles: Role[] = [
   {
     id: 'sigma',
     org: 'Sigma',
-    short: 'Sigma',
     title: 'Software Engineer Intern',
     location: 'New York, NY',
     start: '2026-06',
     end: '2026-08',
-    kind: 'engineering',
     highlights: [
       'Shipped Manual AI Columns end-to-end to production',
       'Caching layer + schema index: −75% query latency',
@@ -59,12 +53,10 @@ export const roles: Role[] = [
   {
     id: 'zwilling',
     org: 'Zwilling J.A. Henckels',
-    short: 'Zwilling',
     title: 'Data Science Intern',
     location: 'New York, NY',
     start: '2025-11',
     end: '2026-05',
-    kind: 'data',
     highlights: [
       'Shipment-audit pipeline at 99.9% data integrity',
       'KPI monitoring suite and SQL performance tuning',
@@ -74,12 +66,10 @@ export const roles: Role[] = [
   {
     id: 'bucherer',
     org: 'Bucherer 1888',
-    short: 'Bucherer',
     title: 'Data Management Intern',
     location: 'New York, NY',
     start: '2025-10',
     end: '2026-05',
-    kind: 'data',
     highlights: [
       'Validation for 100k+ records, zero downstream errors',
       'Legacy-system reconciliation: −90% review time',
@@ -89,12 +79,10 @@ export const roles: Role[] = [
   {
     id: 'lowes',
     org: 'Lowe’s',
-    short: 'Lowe’s',
     title: 'Software Engineer Intern',
     location: 'Charlotte, NC',
     start: '2025-05',
     end: '2025-08',
-    kind: 'engineering',
     highlights: [
       'Built ProRange, live in 1,700+ stores',
       'Backend API performance +25%',
@@ -104,12 +92,10 @@ export const roles: Role[] = [
   {
     id: 'vassar',
     org: 'Vassar Cognitive Science',
-    short: 'Vassar',
     title: 'Programmer',
     location: 'Poughkeepsie, NY',
     start: '2024-09',
     end: '2025-05',
-    kind: 'research',
     highlights: [
       'Web experiments for 100+ participants',
       'ETL over 10k+ trials: −40% pre-processing',
@@ -119,12 +105,10 @@ export const roles: Role[] = [
   {
     id: 'seo',
     org: 'Sponsors for Educational Opportunity',
-    short: 'SEO',
     title: 'Tech Developer Intern',
     location: 'New York, NY',
     start: '2024-06',
     end: '2024-08',
-    kind: 'engineering',
     highlights: [
       'Internal tools used daily by 50+ staff',
       'CI/CD with 90% test coverage',
@@ -162,6 +146,3 @@ export const toIndex = (ym: YM): number => {
 };
 
 export const fmt = (ym: YM): string => fmtIndex(toIndex(ym));
-
-/** Inclusive month count. */
-export const duration = (r: Role): number => toIndex(r.end) - toIndex(r.start) + 1;

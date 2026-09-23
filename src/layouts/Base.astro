@@ -11,7 +11,7 @@ interface Props {
 
 const {
   title = `${profile.name} — ${profile.tagline}`,
-  description = `${profile.tagline} in ${profile.location}. ${profile.about}.`,
+  description = `${profile.name} — ${profile.tagline} in ${profile.location}. Experience, projects and resume.`,
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site);
@@ -29,7 +29,6 @@ const jsonLd = {
   url: canonical.href,
   image: ogUrl,
   sameAs: Object.values(profile.links),
-  alumniOf: { '@type': 'CollegeOrUniversity', name: 'Vassar College' },
 };
 ---
 

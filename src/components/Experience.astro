@@ -1,5 +1,5 @@
 ---
-import { roles, fmt, duration } from '../data/profile';
+import { roles, fmt } from '../data/profile';
 
 const range = (r: (typeof roles)[number]) => {
   const [s, e] = [fmt(r.start), fmt(r.end)];
@@ -11,20 +11,24 @@ const range = (r: (typeof roles)[number]) => {
 <ol class="experience" role="list">
   {
     roles.map((r) => (
-      <li id={r.id} data-role={r.id}>
-        <p class="when mono muted">
-          <time datetime={r.start}>{range(r)}</time>
-          <span class="dur">{duration(r)} mo</span>
-        </p>
-        <div class="what">
-          <h3>
-            {r.org} <span class="muted">· {r.title}</span>
-          </h3>
+      <li id={r.id}>
+        <article>
+          <header>
+            <h3>{r.org}</h3>
+            <p class="when mono muted">
+              <time datetime={r.start}>{range(r)}</time>
+            </p>
+          </header>
+          <p class="meta muted">
+            {r.title} <span aria-hidden="true">·</span> {r.location}
+          </p>
           <ul class="highlights" role="list">
             {r.highlights.map((h) => <li>{h}</li>)}
           </ul>
-          <p class="stack mono muted">{r.stack.join(' / ')}</p>
-        </div>
+          <ul class="stack mono" role="list" aria-label="Stack">
+            {r.stack.map((s) => <li>{s}</li>)}
+          </ul>
+        </article>
       </li>
     ))
   }
@@ -33,87 +37,116 @@ const range = (r: (typeof roles)[number]) => {
 <style>
   .experience {
     display: grid;
+    gap: 0.5rem;
+    margin-inline: -1.25rem;
   }
 
-  .experience > li {
-    display: grid;
-    grid-template-columns: 9.5rem 1fr;
-    gap: 0.25rem 1.5rem;
-    padding: 1.25rem 0;
-    border-top: 1px solid var(--faint);
-    position: relative;
-    transition: opacity 0.25s var(--ease);
+  article {
+    padding: 1.25rem;
+    border: 1px solid transparent;
+    border-radius: 14px;
+    transition:
+      background-color 0.25s var(--ease),
+      border-color 0.25s var(--ease);
   }
 
-  .experience > li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: -1px;
-    height: 1px;
-    width: 100%;
-    background: var(--accent);
-    scale: 0 1;
-    transform-origin: left;
-    transition: scale 0.5s var(--ease);
+  article:hover,
+  li:target article {
+    background: var(--surface);
+    border-color: var(--faint);
   }
 
-  .experience > li:is(:hover, :target, .is-active)::before {
-    scale: 1 1;
-  }
-
-  .experience:has(> li.is-active) > li:not(.is-active) {
-    opacity: 0.45;
-  }
-
-  .when {
+  header {
     display: flex;
-    flex-direction: column;
-    padding-top: 0.2rem;
-  }
-
-  .dur {
-    opacity: 0.7;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.25rem 1rem;
   }
 
   h3 {
-    font-size: var(--step-0);
-    font-weight: 500;
-    letter-spacing: -0.01em;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .when {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .meta {
+    margin-top: 0.15rem;
   }
 
   .highlights {
-    margin-top: 0.35rem;
     display: grid;
-    gap: 0.15rem;
+    gap: 0.3rem;
+    margin-top: 0.85rem;
   }
 
   .highlights li {
     position: relative;
-    padding-left: 1rem;
-    color: color-mix(in oklch, var(--fg) 80%, var(--bg));
+    padding-left: 1.1rem;
+    color: color-mix(in oklch, var(--fg) 85%, var(--bg));
+    text-wrap: pretty;
   }
 
   .highlights li::before {
-    content: '→';
+    content: '';
     position: absolute;
-    left: 0;
-    color: var(--muted);
-    font-size: 0.85em;
+    left: 0.15rem;
+    top: 0.68em;
+    width: 5px;
+    height: 5px;
+    border-radius: 1px;
+    background: var(--accent);
+    opacity: 0.85;
   }
 
   .stack {
-    margin-top: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 1rem;
+  }
+
+  .stack li {
+    padding: 0.12rem 0.55rem;
+    border: 1px solid var(--faint);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 0.72rem;
+    background: var(--bg);
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      article {
+        animation: rise linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 60%;
+      }
+    }
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      translate: 0 12px;
+    }
   }
 
   @media (max-width: 36rem) {
-    .experience > li {
-      grid-template-columns: 1fr;
+    .experience {
+      margin-inline: -0.75rem;
     }
 
-    .when {
-      flex-direction: row;
-      gap: 0.75rem;
+    article {
+      padding: 1rem 0.75rem;
+    }
+
+    header {
+      flex-direction: column;
     }
   }
 </style>
