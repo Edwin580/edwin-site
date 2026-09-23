@@ -1,0 +1,408 @@
+---
+import { execSync } from 'node:child_process';
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Field from '../components/Field.astro';
+import Experience from '../components/Experience.astro';
+import Palette from '../components/Palette.astro';
+import portrait from '../assets/edwin.jpg';
+import { profile, projects } from '../data/profile';
+
+const sha = (() => {
+  if (process.env.GITHUB_SHA) return process.env.GITHUB_SHA.slice(0, 7);
+  try {
+    return execSync('git rev-parse --short HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+  } catch {
+    return 'dev';
+  }
+})();
+const built = new Date().toISOString().slice(0, 10);
+const year = new Date().getFullYear();
+const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume}`;
+---
+
+<Base>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="hero">
+    <Field />
+    <nav class="bar wrap mono" aria-label="Site">
+      <a href="#top" class="mark" aria-label="Home">EC</a>
+      <div class="tools">
+        <button type="button" data-action="theme" aria-label="Toggle theme">
+          <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
+            <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
+            <path d="M8 1.75a6.25 6.25 0 0 1 0 12.5z" fill="currentColor"></path>
+          </svg>
+        </button>
+        <button type="button" data-action="palette" aria-label="Open command menu">
+          <span class="keys"><kbd data-mod>⌘</kbd><kbd>K</kbd></span>
+          <svg class="menu" viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
+            <path d="M2 4.5h12M2 8h12M2 11.5h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <div class="intro wrap" id="top">
+      <Picture
+        src={portrait}
+        alt={profile.name}
+        widths={[96, 192, 288]}
+        sizes="96px"
+        formats={['avif', 'webp']}
+        loading="eager"
+        fetchpriority="high"
+        class="portrait"
+      />
+      <h1>{profile.name}</h1>
+      <p class="sub mono muted">{profile.tagline} · {profile.location}</p>
+      <ul class="links mono" role="list">
+        <li>
+          <a class="cta" href={resume} download>
+            Resume
+            <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
+              <path d="M8 2v9m0 0L4.5 7.5M8 11l3.5-3.5M3 14h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </a>
+        </li>
+        <li><a href={profile.links.github} rel="me noopener" target="_blank">GitHub ↗</a></li>
+        <li><a href={profile.links.linkedin} rel="me noopener" target="_blank">LinkedIn ↗</a></li>
+        <li><a href={`mailto:${profile.email}`}>Email</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main id="main" class="wrap">
+    <section id="experience" aria-labelledby="h-experience">
+      <h2 id="h-experience" class="mono"><span>01</span> Experience</h2>
+      <Experience />
+    </section>
+
+    <section id="projects" aria-labelledby="h-projects">
+      <h2 id="h-projects" class="mono"><span>02</span> Projects</h2>
+      <ul class="projects" role="list">
+        {
+          projects.map((p) => (
+            <li>
+              <a href={p.href} target="_blank" rel="noopener">
+                <span class="name">{p.name}</span>
+                <span class="blurb muted">{p.blurb}</span>
+                <span class="mono muted tags">{p.stack.join(' / ')}</span>
+                <span class="arrow" aria-hidden="true">↗</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </main>
+
+  <footer class="wrap mono muted">
+    <span>© {year} {profile.name}</span>
+    <span>
+      <a href={`https://github.com/Edwin580/edwin-site/commit/${sha}`}>{sha}</a> · {built}
+    </span>
+  </footer>
+
+  <div class="toast mono" role="status" aria-live="polite"></div>
+  <Palette />
+</Base>
+
+<style>
+  .wrap {
+    width: min(var(--measure), 100% - 2 * var(--gutter));
+    margin-inline: auto;
+  }
+
+  .skip {
+    position: absolute;
+    left: 1rem;
+    top: -3rem;
+    z-index: 10;
+    padding: 0.5rem 0.8rem;
+    background: var(--fg);
+    color: var(--bg);
+    border-radius: 6px;
+  }
+
+  .skip:focus {
+    top: 1rem;
+  }
+
+  /* ---------- hero ---------- */
+
+  .hero {
+    position: relative;
+    isolation: isolate;
+    padding-bottom: clamp(2.5rem, 6vw, 4rem);
+  }
+
+  .hero :global(.field) {
+    z-index: -1;
+  }
+
+  .bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-block: 1.5rem;
+  }
+
+  .mark {
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+
+  .tools {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    min-width: 2rem;
+    min-height: 2rem;
+    justify-content: center;
+    padding: 0.35rem;
+    border: 0;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: color 0.2s;
+  }
+
+  button:hover {
+    color: var(--fg);
+  }
+
+  .menu {
+    display: none;
+  }
+
+  @media (pointer: coarse) {
+    .keys {
+      display: none;
+    }
+
+    .menu {
+      display: block;
+    }
+  }
+
+  .intro {
+    padding-top: clamp(2.5rem, 9vw, 5.5rem);
+  }
+
+  .intro :global(.portrait) {
+    display: block;
+    width: 5.5rem;
+    height: 5.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 1.4rem;
+    object-fit: cover;
+    background: var(--surface);
+    box-shadow:
+      0 0 0 1px color-mix(in oklch, var(--fg) 8%, transparent),
+      0 12px 30px -12px rgb(0 0 0 / 0.35);
+  }
+
+  h1 {
+    font-size: var(--step-3);
+    font-weight: 600;
+    letter-spacing: -0.045em;
+    line-height: 1;
+  }
+
+  .sub {
+    margin-top: 0.9rem;
+    font-size: 0.9rem;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    margin-top: 1.75rem;
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    background: var(--fg);
+    color: var(--bg);
+    text-decoration: none;
+    transition: background-color 0.2s, translate 0.2s var(--ease);
+  }
+
+  .cta:hover {
+    background: var(--accent);
+  }
+
+  .cta:hover svg {
+    translate: 0 1px;
+  }
+
+  .cta svg {
+    transition: translate 0.2s var(--ease);
+  }
+
+  /* ---------- sections ---------- */
+
+  section {
+    padding-block: clamp(2rem, 5vw, 3rem);
+  }
+
+  h2 {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  h2 span {
+    color: var(--accent);
+  }
+
+  .projects {
+    display: grid;
+    gap: 0.25rem;
+    margin-inline: -1.25rem;
+  }
+
+  .projects a {
+    display: grid;
+    grid-template-columns: 11rem 1fr auto;
+    gap: 0.1rem 1.5rem;
+    align-items: baseline;
+    padding: 1rem 1.25rem;
+    border: 1px solid transparent;
+    border-radius: 14px;
+    text-decoration: none;
+    transition:
+      background-color 0.25s var(--ease),
+      border-color 0.25s var(--ease);
+  }
+
+  .projects a:hover {
+    background: var(--surface);
+    border-color: var(--faint);
+  }
+
+  .projects .name {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .projects .tags {
+    grid-column: 2;
+  }
+
+  .projects .arrow {
+    grid-column: 3;
+    grid-row: 1;
+    color: var(--muted);
+    transition: translate 0.25s var(--ease), color 0.2s;
+  }
+
+  .projects a:hover .arrow,
+  .projects a:focus-visible .arrow {
+    color: var(--accent);
+    translate: 3px -3px;
+  }
+
+  footer {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-block: 2.5rem;
+    border-top: 1px solid var(--faint);
+    margin-top: 1.5rem;
+  }
+
+  footer a {
+    text-decoration: none;
+  }
+
+  footer a:hover {
+    color: var(--fg);
+  }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 1.5rem;
+    translate: -50% 1rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    background: var(--fg);
+    color: var(--bg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, translate 0.3s var(--ease);
+  }
+
+  .toast.show {
+    opacity: 1;
+    translate: -50% 0;
+  }
+
+  @media (max-width: 36rem) {
+    .intro :global(.portrait) {
+      width: 4.5rem;
+      height: 4.5rem;
+      border-radius: 1.1rem;
+    }
+
+    .projects {
+      margin-inline: -0.75rem;
+    }
+
+    .projects a {
+      grid-template-columns: 1fr auto;
+      padding: 1rem 0.75rem;
+    }
+
+    .projects .blurb,
+    .projects .tags {
+      grid-column: 1 / -1;
+    }
+  }
+</style>
+
+<script>
+  import { toggleTheme } from '../scripts/theme';
+
+  // Show the platform's modifier key.
+  if (!/Mac|iPhone|iPad/.test(navigator.userAgent)) {
+    document.querySelectorAll('[data-mod]').forEach((k) => (k.textContent = 'Ctrl'));
+  }
+
+  document.querySelector('[data-action=theme]')?.addEventListener('click', toggleTheme);
+  document.querySelector('[data-action=palette]')?.addEventListener('click', () =>
+    document.dispatchEvent(new Event('palette:open')),
+  );
+
+  // Toasts.
+  const toast = document.querySelector<HTMLElement>('.toast')!;
+  let hide = 0;
+  document.addEventListener('toast', (e) => {
+    toast.textContent = (e as CustomEvent<string>).detail;
+    toast.classList.add('show');
+    clearTimeout(hide);
+    hide = window.setTimeout(() => toast.classList.remove('show'), 1800);
+  });
+</script>

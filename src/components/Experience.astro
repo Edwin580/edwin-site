@@ -1,0 +1,152 @@
+---
+import { roles, fmt } from '../data/profile';
+
+const range = (r: (typeof roles)[number]) => {
+  const [s, e] = [fmt(r.start), fmt(r.end)];
+  // Collapse the year when a role starts and ends in the same one.
+  return s.slice(-4) === e.slice(-4) ? `${s.slice(0, 3)} – ${e}` : `${s} – ${e}`;
+};
+---
+
+<ol class="experience" role="list">
+  {
+    roles.map((r) => (
+      <li id={r.id}>
+        <article>
+          <header>
+            <h3>{r.org}</h3>
+            <p class="when mono muted">
+              <time datetime={r.start}>{range(r)}</time>
+            </p>
+          </header>
+          <p class="meta muted">
+            {r.title} <span aria-hidden="true">·</span> {r.location}
+          </p>
+          <ul class="highlights" role="list">
+            {r.highlights.map((h) => <li>{h}</li>)}
+          </ul>
+          <ul class="stack mono" role="list" aria-label="Stack">
+            {r.stack.map((s) => <li>{s}</li>)}
+          </ul>
+        </article>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .experience {
+    display: grid;
+    gap: 0.5rem;
+    margin-inline: -1.25rem;
+  }
+
+  article {
+    padding: 1.25rem;
+    border: 1px solid transparent;
+    border-radius: 14px;
+    transition:
+      background-color 0.25s var(--ease),
+      border-color 0.25s var(--ease);
+  }
+
+  article:hover,
+  li:target article {
+    background: var(--surface);
+    border-color: var(--faint);
+  }
+
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.25rem 1rem;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .when {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .meta {
+    margin-top: 0.15rem;
+  }
+
+  .highlights {
+    display: grid;
+    gap: 0.3rem;
+    margin-top: 0.85rem;
+  }
+
+  .highlights li {
+    position: relative;
+    padding-left: 1.1rem;
+    color: color-mix(in oklch, var(--fg) 85%, var(--bg));
+    text-wrap: pretty;
+  }
+
+  .highlights li::before {
+    content: '';
+    position: absolute;
+    left: 0.15rem;
+    top: 0.68em;
+    width: 5px;
+    height: 5px;
+    border-radius: 1px;
+    background: var(--accent);
+    opacity: 0.85;
+  }
+
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 1rem;
+  }
+
+  .stack li {
+    padding: 0.12rem 0.55rem;
+    border: 1px solid var(--faint);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 0.72rem;
+    background: var(--bg);
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      article {
+        animation: rise linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 60%;
+      }
+    }
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      translate: 0 12px;
+    }
+  }
+
+  @media (max-width: 36rem) {
+    .experience {
+      margin-inline: -0.75rem;
+    }
+
+    article {
+      padding: 1rem 0.75rem;
+    }
+
+    header {
+      flex-direction: column;
+    }
+  }
+</style>
