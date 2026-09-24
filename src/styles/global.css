@@ -5,6 +5,8 @@
   --text: #171717;
   --muted: #5c5c5c;
   --rule: #e4e4e1;
+  --underline: #b5b5b0;
+  --button-border: #cfcfca;
 
   --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --width: 38rem;
@@ -17,6 +19,8 @@
     --text: #ececec;
     --muted: #a3a3a3;
     --rule: #2c2c2c;
+    --underline: #5e5e5e;
+    --button-border: #474747;
   }
 }
 
@@ -52,7 +56,7 @@ a {
   color: inherit;
   text-decoration-line: underline;
   text-decoration-thickness: 1px;
-  text-decoration-color: var(--rule);
+  text-decoration-color: var(--underline);
   text-underline-offset: 0.2em;
 }
 
