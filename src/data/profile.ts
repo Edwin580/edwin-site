@@ -1,11 +1,10 @@
-/** Single source of truth for everything rendered on the site. */
+/** Everything the site shows lives here. */
 
-import { fmtIndex } from '../scripts/dates';
-
-/** Year-month, e.g. "2025-05". */
+/** Year and month, e.g. "2025-05". */
 export type YM = `${number}-${string}`;
 
 export interface Role {
+  /** Also the logo file name in src/assets/logos/. */
   id: string;
   org: string;
   /** Letters shown when there is no logo file; defaults to the first letter of `org`. */
@@ -20,17 +19,16 @@ export interface Role {
 
 export interface Project {
   name: string;
-  blurb: string;
+  description: string;
   stack: string[];
-  /** Live deployment, when there is one. */
+  /** Live site, when there is one. */
   live?: string;
-  /** Source code or notebook. */
   source: string;
 }
 
 export const profile = {
   name: 'Edwin Cortazo',
-  tagline: 'Software engineer',
+  role: 'Software engineer',
   location: 'New York',
   resume: 'Edwin_Cortazo_Resume.pdf',
   email: 'edwincortazo@gmail.com',
@@ -49,9 +47,9 @@ export const roles: Role[] = [
     start: '2026-06',
     end: '2026-08',
     highlights: [
-      'Shipped Manual AI Columns end-to-end to production',
-      'Caching layer + schema index: −75% query latency',
-      'Model-deprecation tracking across Snowflake & Databricks',
+      'Built the Manual AI Columns feature end to end and shipped it to production.',
+      'Added a caching layer and a schema-level index that cut query latency by 75%.',
+      'Designed a system that tracks model deprecations across Snowflake and Databricks and alerts the team in Slack.',
     ],
     stack: ['TypeScript', 'React', 'Snowflake', 'Databricks'],
   },
@@ -63,8 +61,8 @@ export const roles: Role[] = [
     start: '2025-11',
     end: '2026-05',
     highlights: [
-      'Shipment-audit pipeline at 99.9% data integrity',
-      'KPI monitoring suite and SQL performance tuning',
+      'Built a pipeline that audits shipment reports automatically, keeping data integrity at 99.9%.',
+      'Made a dashboard for monitoring KPIs and tuning slow SQL queries.',
     ],
     stack: ['Python', 'PostgreSQL', 'TypeScript', 'React'],
   },
@@ -76,10 +74,10 @@ export const roles: Role[] = [
     start: '2025-10',
     end: '2026-05',
     highlights: [
-      'Validation for 100k+ records, zero downstream errors',
-      'Legacy-system reconciliation: −90% review time',
+      'Wrote validation scripts covering 100,000+ records with no downstream errors.',
+      'Reconciled invoice and product data across legacy systems, cutting review time by 90%.',
     ],
-    stack: ['Python', 'pandas', 'ETL'],
+    stack: ['Python', 'pandas'],
   },
   {
     id: 'lowes',
@@ -89,21 +87,21 @@ export const roles: Role[] = [
     start: '2025-05',
     end: '2025-08',
     highlights: [
-      'Built ProRange, live in 1,700+ stores',
-      'Backend API performance +25%',
+      'Built and deployed ProRange, a platform used in more than 1,700 stores.',
+      'Improved backend API performance by 25% and reduced scheduling errors.',
     ],
     stack: ['React', 'Kotlin', 'Java', 'Spring Boot'],
   },
   {
     id: 'vassar',
-    org: 'Vassar Cognitive Science',
-    title: 'Programmer',
+    org: 'Vassar College',
+    title: 'Cognitive Science Programmer',
     location: 'Poughkeepsie, NY',
     start: '2024-09',
     end: '2025-05',
     highlights: [
-      'Web experiments for 100+ participants',
-      'ETL over 10k+ trials: −40% pre-processing',
+      'Built browser-based experiments that ran with more than 100 participants.',
+      'Automated data processing for 10,000+ trials, cutting preprocessing time by 40%.',
     ],
     stack: ['JavaScript', 'jsPsych', 'Python'],
   },
@@ -116,41 +114,48 @@ export const roles: Role[] = [
     start: '2024-06',
     end: '2024-08',
     highlights: [
-      'Internal tools used daily by 50+ staff',
-      'CI/CD with 90% test coverage',
+      'Built internal tools used daily by more than 50 staff.',
+      'Set up CI/CD and a test suite with 90% coverage.',
     ],
-    stack: ['Flask', 'PostgreSQL', 'REST'],
+    stack: ['Python', 'Flask', 'PostgreSQL'],
   },
 ];
 
 export const projects: Project[] = [
   {
     name: 'RSVP Reader',
-    blurb: 'Speed reader for EPUB, PDF and text: one word at a time, fixed focus point, in-book search',
-    stack: ['React', 'TypeScript', 'Vite', 'Web Workers'],
+    description:
+      'A speed-reading app. Open an EPUB, PDF, or text file and it shows the book one word at a time, with search and saved progress.',
+    stack: ['React', 'TypeScript'],
     live: 'https://edwin580.github.io/RSVP-Reader/',
     source: 'https://github.com/Edwin580/RSVP-Reader',
   },
   {
     name: 'Moral Pop-Out',
-    blurb: 'Online experiment testing whether word valence changes perceived brightness, with a results dashboard',
-    stack: ['JavaScript', 'jsPsych', 'Playwright'],
+    description:
+      'An online experiment testing whether a word’s emotional tone changes how bright a gray square looks, run with real participants.',
+    stack: ['JavaScript', 'jsPsych'],
     live: 'https://edwin580.github.io/Prolific-Experiment/',
     source: 'https://github.com/Edwin580/Prolific-Experiment',
   },
   {
     name: 'Music Generation',
-    blurb: 'PyTorch package that learns melodies from MIDI and writes new ones, with Transformer and LSTM models and key-aware sampling',
-    stack: ['Python', 'PyTorch', 'Transformer', 'LSTM'],
+    description: 'A Python package that learns melodies from MIDI files and writes new ones, using Transformer and LSTM models.',
+    stack: ['Python', 'PyTorch'],
     source: 'https://github.com/Edwin580/music-generator',
   },
 ];
 
-/* ---------- date helpers (pure, build-time) ---------- */
+/* Dates */
 
-export const toIndex = (ym: YM): number => {
-  const [y, m] = ym.split('-').map(Number) as [number, number];
-  return y * 12 + (m - 1);
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+const parts = (ym: YM) => ym.split('-').map(Number) as [number, number];
+
+/** "Jun – Aug 2026", or "Nov 2025 – May 2026" when the years differ. */
+export const dateRange = ({ start, end }: Pick<Role, 'start' | 'end'>): string => {
+  const [sy, sm] = parts(start);
+  const [ey, em] = parts(end);
+  const from = sy === ey ? MONTHS[sm - 1] : `${MONTHS[sm - 1]} ${sy}`;
+  return `${from} – ${MONTHS[em - 1]} ${ey}`;
 };
-
-export const fmt = (ym: YM): string => fmtIndex(toIndex(ym));

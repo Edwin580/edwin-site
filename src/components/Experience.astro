@@ -1,7 +1,7 @@
 ---
 import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
-import { roles, fmt } from '../data/profile';
+import { roles, dateRange } from '../data/profile';
 
 // Drop a logo at src/assets/logos/<role id>.{svg,png,jpg,webp} and it's picked up here.
 const files = import.meta.glob<{ default: ImageMetadata }>('../assets/logos/*.{svg,png,jpg,jpeg,webp}', {
@@ -10,148 +10,142 @@ const files = import.meta.glob<{ default: ImageMetadata }>('../assets/logos/*.{s
 const logos = new Map(
   Object.entries(files).map(([path, mod]) => [path.split('/').pop()!.replace(/\.\w+$/, ''), mod.default]),
 );
-
-
-const range = (r: (typeof roles)[number]) => {
-  const [s, e] = [fmt(r.start), fmt(r.end)];
-  // Collapse the year when a role starts and ends in the same one.
-  return s.slice(-4) === e.slice(-4) ? `${s.slice(0, 3)} – ${e}` : `${s} – ${e}`;
-};
 ---
 
-<ol class="experience cards" role="list">
+<ol class="roles" role="list">
   {
     roles.map((r) => (
-      <li id={r.id}>
-        <article class="card">
-          <span class="logo" aria-hidden="true">
-            {logos.has(r.id) ? (
-              <Image src={logos.get(r.id)!} alt="" width={80} height={80} densities={[1, 2]} />
-            ) : (
-              <span class="mono">{r.monogram ?? r.org.charAt(0)}</span>
-            )}
-          </span>
-          <div class="body">
-            <header>
-              <h3>{r.org}</h3>
-              <p class="when mono muted">
-                <time datetime={r.start}>{range(r)}</time>
-              </p>
-            </header>
-            <p class="meta muted">
-              {r.title} <span aria-hidden="true">·</span> {r.location}
+      <li class="role">
+        <span class="logo" aria-hidden="true">
+          {logos.has(r.id) ? (
+            <Image src={logos.get(r.id)!} alt="" width={36} height={36} densities={[1, 2, 3]} />
+          ) : (
+            <span>{r.monogram ?? r.org.charAt(0)}</span>
+          )}
+        </span>
+        <div class="head">
+          <div class="top">
+            <h3>{r.org}</h3>
+            <p class="muted dates">
+              <time datetime={r.start}>{dateRange(r)}</time>
             </p>
-            <ul class="highlights" role="list">
-              {r.highlights.map((h) => <li>{h}</li>)}
-            </ul>
-            <ul class="chips mono" role="list" aria-label="Stack">
-              {r.stack.map((s) => <li>{s}</li>)}
-            </ul>
           </div>
-        </article>
+          <p class="muted">
+            {r.title}, {r.location}
+          </p>
+        </div>
+        <div class="body">
+          <ul class="points">
+            {r.highlights.map((h) => (
+              <li>{h}</li>
+            ))}
+          </ul>
+          <p class="muted stack">{r.stack.join(', ')}</p>
+        </div>
       </li>
     ))
   }
 </ol>
 
 <style>
-  article {
+  .roles {
     display: grid;
-    grid-template-columns: 2.75rem 1fr;
-    gap: 1rem;
-    align-items: start;
+    gap: 2.25rem;
+  }
+
+  .role {
+    display: grid;
+    grid-template-columns: 2.25rem 1fr;
+    column-gap: 1rem;
+  }
+
+  .head,
+  .body {
+    grid-column: 2;
   }
 
   .logo {
     display: grid;
     place-items: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    border-radius: 10px;
+    width: 2.25rem;
+    height: 2.25rem;
+    margin-top: 0.1rem;
     overflow: hidden;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
     background: #fff;
-    box-shadow: 0 0 0 1px var(--faint);
+    color: #171717;
+    font-size: 0.75rem;
+    font-weight: 600;
   }
 
-  /* Logo files are pre-squared with their own background, so they fill the tile. */
   .logo :global(img) {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  .logo span {
-    color: #1f1f1c;
-    font-weight: 600;
-    font-size: 0.8rem;
-    letter-spacing: 0.02em;
-  }
-
-  .body {
-    min-width: 0;
-  }
-
-  header {
+  .top {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: baseline;
-    gap: 0.25rem 1rem;
+    column-gap: 1rem;
   }
 
   h3 {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
-    letter-spacing: -0.02em;
   }
 
-  .when {
+  .dates {
+    font-size: 0.9375rem;
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
 
-  .meta {
-    margin-top: 0.15rem;
-  }
-
-  .highlights {
-    display: grid;
-    gap: 0.3rem;
-    margin-top: 0.85rem;
-  }
-
-  .highlights li {
-    position: relative;
+  .points {
+    margin-top: 0.6rem;
     padding-left: 1.1rem;
-    color: color-mix(in oklch, var(--fg) 85%, var(--bg));
-    text-wrap: pretty;
+    list-style-type: disc;
   }
 
-  .highlights li::before {
-    content: '';
-    position: absolute;
-    left: 0.15rem;
-    top: 0.68em;
-    width: 5px;
-    height: 5px;
-    border-radius: 1px;
-    background: var(--accent);
-    opacity: 0.85;
+  .points li + li {
+    margin-top: 0.3rem;
   }
 
-  @media (max-width: 36rem) {
-    article {
-      grid-template-columns: 2.25rem 1fr;
-      gap: 0.75rem;
+  .points li::marker {
+    color: var(--muted);
+  }
+
+  .stack {
+    margin-top: 0.6rem;
+    font-size: 0.875rem;
+  }
+
+  /* On phones the logo stays beside the company, the dates drop under it,
+     and the bullets use the full width. */
+  @media (max-width: 30rem) {
+    .role {
+      column-gap: 0.75rem;
     }
 
-    .logo {
-      width: 2.25rem;
-      height: 2.25rem;
-      border-radius: 8px;
-    }
-
-    header {
+    .top {
       flex-direction: column;
+    }
+
+    .body {
+      grid-column: 1 / -1;
+    }
+
+    .points {
+      padding-left: 1rem;
+    }
+  }
+
+  @media print {
+    .role {
+      break-inside: avoid;
     }
   }
 </style>

@@ -2,78 +2,60 @@
 import { projects } from '../data/profile';
 ---
 
-<ul class="cards" role="list">
+<ul class="projects" role="list">
   {
     projects.map((p) => (
       <li>
-        <article class="card">
-          <header>
-            <h3>{p.name}</h3>
-            <p class="links mono">
-              {p.live && (
-                <a href={p.live} target="_blank" rel="noopener" class="live">
-                  Live <span aria-hidden="true">↗</span>
-                  <span class="sr-only">(opens {p.name} demo)</span>
-                </a>
-              )}
-              <a href={p.source} target="_blank" rel="noopener">
-                {p.source.includes('github.com') ? 'Code' : 'Notebook'} <span aria-hidden="true">↗</span>
-                <span class="sr-only">(opens {p.name} source)</span>
-              </a>
-            </p>
-          </header>
-          <p class="blurb muted">{p.blurb}</p>
-          <ul class="chips mono" role="list" aria-label="Stack">
-            {p.stack.map((s) => <li>{s}</li>)}
-          </ul>
-        </article>
+        <h3>{p.name}</h3>
+        <p class="description">{p.description}</p>
+        <p class="muted meta">
+          <span>{p.stack.join(', ')}</span>
+          {p.live && (
+            <a href={p.live}>
+              Live site<span class="sr-only"> for {p.name}</span>
+            </a>
+          )}
+          <a href={p.source}>
+            Source<span class="sr-only"> for {p.name}</span>
+          </a>
+        </p>
       </li>
     ))
   }
 </ul>
 
 <style>
-  header {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 0.25rem 1rem;
+  .projects {
+    display: grid;
+    gap: 2rem;
   }
 
   h3 {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
-    letter-spacing: -0.02em;
   }
 
-  .links {
-    display: flex;
-    gap: 1rem;
-  }
-
-  .links a {
-    color: var(--muted);
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-
-  .links a:hover,
-  .links a:focus-visible {
-    color: var(--fg);
-  }
-
-  .links .live {
-    color: var(--accent);
-  }
-
-  .links .live:hover {
-    color: var(--accent);
-    text-decoration: underline;
-  }
-
-  .blurb {
-    margin-top: 0.35rem;
+  .description {
+    margin-top: 0.25rem;
     text-wrap: pretty;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 1rem;
+    margin-top: 0.15rem;
+    font-size: 0.875rem;
+  }
+
+  /* Taller hit area for the links on touch screens. */
+  .meta a {
+    display: inline-block;
+    padding-block: 0.4rem;
+  }
+
+  .meta a:hover {
+    color: var(--text);
   }
 </style>
