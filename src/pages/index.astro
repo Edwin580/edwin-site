@@ -1,5 +1,4 @@
 ---
-import { execSync } from 'node:child_process';
 import { Picture } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Field from '../components/Field.astro';
@@ -9,15 +8,6 @@ import Palette from '../components/Palette.astro';
 import portrait from '../assets/edwin.jpg';
 import { profile } from '../data/profile';
 
-const sha = (() => {
-  if (process.env.GITHUB_SHA) return process.env.GITHUB_SHA.slice(0, 7);
-  try {
-    return execSync('git rev-parse --short HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
-  } catch {
-    return 'dev';
-  }
-})();
-const built = new Date().toISOString().slice(0, 10);
 const year = new Date().getFullYear();
 const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume}`;
 ---
@@ -88,9 +78,6 @@ const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume
 
   <footer class="wrap mono muted">
     <span>© {year} {profile.name}</span>
-    <span>
-      <a href={`https://github.com/Edwin580/edwin-site/commit/${sha}`}>{sha}</a> · {built}
-    </span>
   </footer>
 
   <div class="toast mono" role="status" aria-live="polite"></div>
@@ -273,14 +260,6 @@ const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume
     padding-block: 2.5rem;
     border-top: 1px solid var(--faint);
     margin-top: 1.5rem;
-  }
-
-  footer a {
-    text-decoration: none;
-  }
-
-  footer a:hover {
-    color: var(--fg);
   }
 
   .toast {
