@@ -33,6 +33,7 @@ jobs:
           SITE: https://${{ github.repository_owner }}.github.io
           BASE_PATH: /${{ github.event.repository.name }}/pr-preview/pr-${{ github.event.number }}/
           PREVIEW: 'true'
+          PR_NUMBER: ${{ github.event.number }}
       - uses: rossjrw/pr-preview-action@v1
         with:
           source-dir: dist
