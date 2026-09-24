@@ -1,5 +1,16 @@
 ---
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
 import { roles, fmt } from '../data/profile';
+
+// Drop a logo at src/assets/logos/<role id>.{svg,png,jpg,webp} and it's picked up here.
+const files = import.meta.glob<{ default: ImageMetadata }>('../assets/logos/*.{svg,png,jpg,jpeg,webp}', {
+  eager: true,
+});
+const logos = new Map(
+  Object.entries(files).map(([path, mod]) => [path.split('/').pop()!.replace(/\.\w+$/, ''), mod.default]),
+);
+
 
 const range = (r: (typeof roles)[number]) => {
   const [s, e] = [fmt(r.start), fmt(r.end)];
@@ -13,21 +24,30 @@ const range = (r: (typeof roles)[number]) => {
     roles.map((r) => (
       <li id={r.id}>
         <article class="card">
-          <header>
-            <h3>{r.org}</h3>
-            <p class="when mono muted">
-              <time datetime={r.start}>{range(r)}</time>
+          <span class="logo" aria-hidden="true">
+            {logos.has(r.id) ? (
+              <Image src={logos.get(r.id)!} alt="" width={80} height={80} densities={[1, 2]} />
+            ) : (
+              <span class="mono">{r.monogram ?? r.org.charAt(0)}</span>
+            )}
+          </span>
+          <div class="body">
+            <header>
+              <h3>{r.org}</h3>
+              <p class="when mono muted">
+                <time datetime={r.start}>{range(r)}</time>
+              </p>
+            </header>
+            <p class="meta muted">
+              {r.title} <span aria-hidden="true">·</span> {r.location}
             </p>
-          </header>
-          <p class="meta muted">
-            {r.title} <span aria-hidden="true">·</span> {r.location}
-          </p>
-          <ul class="highlights" role="list">
-            {r.highlights.map((h) => <li>{h}</li>)}
-          </ul>
-          <ul class="chips mono" role="list" aria-label="Stack">
-            {r.stack.map((s) => <li>{s}</li>)}
-          </ul>
+            <ul class="highlights" role="list">
+              {r.highlights.map((h) => <li>{h}</li>)}
+            </ul>
+            <ul class="chips mono" role="list" aria-label="Stack">
+              {r.stack.map((s) => <li>{s}</li>)}
+            </ul>
+          </div>
         </article>
       </li>
     ))
@@ -35,6 +55,42 @@ const range = (r: (typeof roles)[number]) => {
 </ol>
 
 <style>
+  article {
+    display: grid;
+    grid-template-columns: 2.75rem 1fr;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .logo {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 0 0 1px var(--faint);
+  }
+
+  /* Logo files are pre-squared with their own background, so they fill the tile. */
+  .logo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .logo span {
+    color: #1f1f1c;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+  }
+
+  .body {
+    min-width: 0;
+  }
+
   header {
     display: flex;
     flex-wrap: wrap;
@@ -83,6 +139,17 @@ const range = (r: (typeof roles)[number]) => {
   }
 
   @media (max-width: 36rem) {
+    article {
+      grid-template-columns: 2.25rem 1fr;
+      gap: 0.75rem;
+    }
+
+    .logo {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 8px;
+    }
+
     header {
       flex-direction: column;
     }
