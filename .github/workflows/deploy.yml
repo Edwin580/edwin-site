@@ -1,22 +1,22 @@
 name: Deploy
 
+# Publishes main to the root of the gh-pages branch.
+# PR previews live under pr-preview/ on the same branch (see preview.yml).
+
 on:
   push:
     branches: [main]
-  pull_request:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
-  group: pages-${{ github.ref }}
-  cancel-in-progress: true
+  group: gh-pages
+  cancel-in-progress: false
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -24,26 +24,14 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      - id: pages
-        if: github.event_name != 'pull_request'
-        uses: actions/configure-pages@v5
       - run: npm ci
       - run: npm run build
         env:
-          SITE: ${{ steps.pages.outputs.origin }}
-          BASE_PATH: ${{ steps.pages.outputs.base_path }}
-      - if: github.event_name != 'pull_request'
-        uses: actions/upload-pages-artifact@v3
+          SITE: https://${{ github.repository_owner }}.github.io
+          BASE_PATH: /${{ github.event.repository.name }}/
+      - uses: JamesIves/github-pages-deploy-action@v4
         with:
-          path: dist
-
-  deploy:
-    if: github.event_name != 'pull_request'
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          folder: dist
+          branch: gh-pages
+          clean-exclude: pr-preview/
+          force: false
