@@ -15,6 +15,8 @@ const {
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site);
+// Set by the Preview workflow; production builds leave both empty.
+const preview = process.env.PREVIEW ? (process.env.PR_NUMBER ?? '') : null;
 const favicon = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}favicon.svg`;
 
 const og = await getImage({ src: portrait, width: 600, height: 600, format: 'jpg' });
@@ -44,7 +46,7 @@ const jsonLd = {
     <meta name="theme-color" content="#f9f8f4" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#141412" media="(prefers-color-scheme: dark)" />
     <meta name="generator" content={Astro.generator} />
-    {process.env.PREVIEW && <meta name="robots" content="noindex, nofollow" />}
+    {preview !== null && <meta name="robots" content="noindex, nofollow" />}
 
     <meta property="og:type" content="profile" />
     <meta property="og:title" content={title} />
@@ -68,5 +70,28 @@ const jsonLd = {
   </head>
   <body>
     <slot />
+    {
+      preview !== null && (
+        <a class="preview-badge" href={`https://github.com/Edwin580/edwin-site/pull/${preview}`}>
+          Preview{preview && ` · PR #${preview}`}
+        </a>
+      )
+    }
   </body>
 </html>
+
+<style>
+  .preview-badge {
+    position: fixed;
+    left: 1rem;
+    bottom: 1rem;
+    z-index: 20;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    font: 500 0.72rem/1 var(--mono);
+    text-decoration: none;
+    box-shadow: 0 6px 20px -8px rgb(0 0 0 / 0.4);
+  }
+</style>
