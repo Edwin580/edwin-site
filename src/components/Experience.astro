@@ -73,11 +73,11 @@ const range = (r: (typeof roles)[number]) => {
     box-shadow: 0 0 0 1px var(--faint);
   }
 
+  /* Logo files are pre-squared with their own background, so they fill the tile. */
   .logo :global(img) {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    padding: 5px;
+    object-fit: cover;
   }
 
   .logo span {
