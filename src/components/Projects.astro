@@ -2,78 +2,85 @@
 import { projects } from '../data/profile';
 ---
 
-<ul class="cards" role="list">
+<ul class="projects" role="list">
   {
     projects.map((p) => (
       <li>
-        <article class="card">
-          <header>
-            <h3>{p.name}</h3>
-            <p class="links mono">
-              {p.live && (
-                <a href={p.live} target="_blank" rel="noopener" class="live">
-                  Live <span aria-hidden="true">↗</span>
-                  <span class="sr-only">(opens {p.name} demo)</span>
-                </a>
-              )}
-              <a href={p.source} target="_blank" rel="noopener">
-                {p.source.includes('github.com') ? 'Code' : 'Notebook'} <span aria-hidden="true">↗</span>
-                <span class="sr-only">(opens {p.name} source)</span>
-              </a>
-            </p>
-          </header>
-          <p class="blurb muted">{p.blurb}</p>
-          <ul class="chips mono" role="list" aria-label="Stack">
-            {p.stack.map((s) => <li>{s}</li>)}
-          </ul>
-        </article>
+        <h3>{p.name}</h3>
+        <p class="description">{p.description}</p>
+        <p class="muted stack">{p.stack.join(', ')}</p>
+        <p class="actions">
+          {p.live && (
+            <a class="button primary" href={p.live}>
+              Visit site<span class="sr-only">: {p.name}</span>
+            </a>
+          )}
+          <a class="button" href={p.source}>
+            Source code<span class="sr-only">: {p.name}</span>
+          </a>
+        </p>
       </li>
     ))
   }
 </ul>
 
 <style>
-  header {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 0.25rem 1rem;
+  .projects {
+    display: grid;
+    gap: 2.25rem;
   }
 
   h3 {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
-    letter-spacing: -0.02em;
   }
 
-  .links {
-    display: flex;
-    gap: 1rem;
-  }
-
-  .links a {
-    color: var(--muted);
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-
-  .links a:hover,
-  .links a:focus-visible {
-    color: var(--fg);
-  }
-
-  .links .live {
-    color: var(--accent);
-  }
-
-  .links .live:hover {
-    color: var(--accent);
-    text-decoration: underline;
-  }
-
-  .blurb {
-    margin-top: 0.35rem;
+  .description {
+    margin-top: 0.25rem;
     text-wrap: pretty;
+  }
+
+  .stack {
+    margin-top: 0.4rem;
+    font-size: 0.875rem;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.85rem;
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.25rem;
+    padding: 0 0.85rem;
+    border: 1px solid var(--button-border);
+    border-radius: 6px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .button:hover {
+    border-color: var(--text);
+  }
+
+  .primary {
+    border-color: var(--text);
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  .primary:hover {
+    opacity: 0.85;
+  }
+
+  @media print {
+    .actions {
+      display: none;
+    }
   }
 </style>

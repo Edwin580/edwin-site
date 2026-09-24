@@ -1,10 +1,10 @@
 # edwin-site
 
-Personal site. Astro + TypeScript, static output, no client framework.
+My personal site: experience, projects, and resume on one page.
 
-- `src/data/profile.ts` holds all content: edit roles, projects and links there.
-- The hero dot field is a canvas 2D spring simulation that pauses off-screen and respects `prefers-reduced-motion`.
-- <kbd>⌘K</kbd> / <kbd>/</kbd> opens the command menu, and <kbd>T</kbd> toggles the theme.
+- All content lives in `src/data/profile.ts`. Edit roles, projects, and links there.
+- Company logos go in `src/assets/logos/`, named after the role id (for example `sigma.png`).
+- Built with Astro as plain static HTML and CSS. It uses system fonts and ships no JavaScript.
 
 ```sh
 npm install

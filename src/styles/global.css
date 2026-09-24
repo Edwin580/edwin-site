@@ -1,47 +1,27 @@
-@import '@fontsource-variable/geist';
-@import '@fontsource-variable/geist-mono';
-
 :root {
-  color-scheme: light;
-  --bg: oklch(98.5% 0.004 90);
-  --fg: oklch(20% 0.01 90);
-  --muted: oklch(50% 0.01 90);
-  --faint: oklch(88% 0.006 90);
-  --surface: oklch(96% 0.005 90);
-  --accent: oklch(62% 0.2 38);
+  color-scheme: light dark;
 
-  --sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
-  --mono: 'Geist Mono Variable', ui-monospace, 'SFMono-Regular', monospace;
+  --bg: #fcfcfb;
+  --text: #171717;
+  --muted: #5c5c5c;
+  --rule: #e4e4e1;
+  --underline: #b5b5b0;
+  --button-border: #cfcfca;
 
-  --step--1: clamp(0.78rem, 0.76rem + 0.1vw, 0.84rem);
-  --step-0: clamp(0.94rem, 0.9rem + 0.2vw, 1.05rem);
-  --step-3: clamp(2rem, 1.4rem + 3vw, 3.4rem);
-
-  --measure: 44rem;
-  --gutter: clamp(1rem, 4vw, 2rem);
-  --ease: cubic-bezier(0.2, 0.7, 0.1, 1);
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --width: 38rem;
+  --gutter: 1.25rem;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    color-scheme: dark;
-    --bg: oklch(16% 0.005 90);
-    --fg: oklch(93% 0.006 90);
-    --muted: oklch(66% 0.008 90);
-    --faint: oklch(28% 0.006 90);
-    --surface: oklch(20% 0.006 90);
-    --accent: oklch(72% 0.18 45);
+  :root {
+    --bg: #131313;
+    --text: #ececec;
+    --muted: #a3a3a3;
+    --rule: #2c2c2c;
+    --underline: #5e5e5e;
+    --button-border: #474747;
   }
-}
-
-:root[data-theme='dark'] {
-  color-scheme: dark;
-  --bg: oklch(16% 0.005 90);
-  --fg: oklch(93% 0.006 90);
-  --muted: oklch(66% 0.008 90);
-  --faint: oklch(28% 0.006 90);
-  --surface: oklch(20% 0.006 90);
-  --accent: oklch(72% 0.18 45);
 }
 
 *,
@@ -52,31 +32,32 @@
 
 * {
   margin: 0;
+  padding: 0;
 }
 
 html {
-  -webkit-text-size-adjust: none;
-  text-size-adjust: none;
-  scroll-behavior: smooth;
-  scroll-padding-top: 2rem;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
-  min-height: 100dvh;
   background: var(--bg);
-  color: var(--fg);
-  font: 400 var(--step-0) / 1.55 var(--sans);
-  font-feature-settings: 'ss01', 'cv11';
+  color: var(--text);
+  font: 400 1rem/1.6 var(--font);
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  transition: background-color 0.3s var(--ease), color 0.3s var(--ease);
+}
+
+img {
+  display: block;
+  max-width: 100%;
 }
 
 a {
   color: inherit;
-  text-decoration-color: var(--faint);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--underline);
   text-underline-offset: 0.2em;
-  transition: text-decoration-color 0.2s, color 0.2s;
 }
 
 a:hover {
@@ -84,25 +65,14 @@ a:hover {
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
   border-radius: 2px;
 }
 
-::selection {
-  background: var(--accent);
-  color: var(--bg);
-}
-
-:is(ul, ol)[role='list'] {
+ul[role='list'],
+ol[role='list'] {
   list-style: none;
-  padding: 0;
-}
-
-.mono {
-  font-family: var(--mono);
-  font-size: var(--step--1);
-  letter-spacing: -0.01em;
 }
 
 .muted {
@@ -113,99 +83,25 @@ a:hover {
   position: absolute;
   width: 1px;
   height: 1px;
-  padding: 0;
-  margin: -1px;
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
-  border: 0;
 }
 
-/* ---------- cards (experience, projects) ---------- */
-
-.cards {
-  display: grid;
-  gap: 0.5rem;
-  margin-inline: -1.25rem;
-}
-
-.card {
-  padding: 1.25rem;
-  border: 1px solid transparent;
-  border-radius: 14px;
-  transition:
-    background-color 0.25s var(--ease),
-    border-color 0.25s var(--ease);
-}
-
-.card:hover,
-:target > .card {
-  background: var(--surface);
-  border-color: var(--faint);
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  margin-top: 1rem;
-}
-
-.chips li {
-  padding: 0.12rem 0.55rem;
-  border: 1px solid var(--faint);
-  border-radius: 999px;
-  color: var(--muted);
-  font-size: 0.72rem;
-  background: var(--bg);
-}
-
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .card {
-      animation: rise linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 60%;
-    }
+@media (min-width: 48rem) {
+  body {
+    font-size: 1.0625rem;
   }
 }
 
-@keyframes rise {
-  from {
-    opacity: 0;
-    translate: 0 12px;
-  }
-}
-
-@media (max-width: 36rem) {
-  .cards {
-    margin-inline: -0.75rem;
+@media print {
+  :root {
+    --bg: #fff;
+    --text: #000;
+    --muted: #444;
   }
 
-  .card {
-    padding: 1rem 0.75rem;
-  }
-}
-
-kbd {
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  padding: 0.1em 0.4em;
-  border: 1px solid var(--faint);
-  border-radius: 4px;
-  background: var(--surface);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  a {
+    text-decoration: none;
   }
 }

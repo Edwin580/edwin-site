@@ -1,315 +1,144 @@
 ---
 import { Picture } from 'astro:assets';
 import Base from '../layouts/Base.astro';
-import Field from '../components/Field.astro';
 import Experience from '../components/Experience.astro';
 import Projects from '../components/Projects.astro';
-import Palette from '../components/Palette.astro';
 import portrait from '../assets/edwin.jpg';
 import { profile } from '../data/profile';
 
-const year = new Date().getFullYear();
 const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume}`;
 ---
 
 <Base>
   <a class="skip" href="#main">Skip to content</a>
 
-  <header class="hero">
-    <Field />
-    <nav class="bar wrap mono" aria-label="Site">
-      <a href="#top" class="mark" aria-label="Home">EC</a>
-      <div class="tools">
-        <button type="button" data-action="theme" aria-label="Toggle theme">
-          <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
-            <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
-            <path d="M8 1.75a6.25 6.25 0 0 1 0 12.5z" fill="currentColor"></path>
-          </svg>
-        </button>
-        <button type="button" data-action="palette" aria-label="Open command menu">
-          <span class="keys"><kbd data-mod>⌘</kbd><kbd>K</kbd></span>
-          <svg class="menu" viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
-            <path d="M2 4.5h12M2 8h12M2 11.5h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
-          </svg>
-        </button>
-      </div>
-    </nav>
-
-    <div class="intro wrap" id="top">
+  <header class="page">
+    <div class="intro">
       <Picture
         src={portrait}
-        alt={profile.name}
-        widths={[96, 192, 288]}
-        sizes="96px"
+        alt=""
+        widths={[64, 128, 192]}
+        sizes="64px"
         formats={['avif', 'webp']}
         loading="eager"
         fetchpriority="high"
         class="portrait"
       />
-      <h1>{profile.name}</h1>
-      <p class="sub mono muted">{profile.tagline} · {profile.location}</p>
-      <ul class="links mono" role="list">
-        <li>
-          <a class="cta" href={resume} download>
-            Resume
-            <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
-              <path d="M8 2v9m0 0L4.5 7.5M8 11l3.5-3.5M3 14h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-          </a>
-        </li>
-        <li><a href={profile.links.github} rel="me noopener" target="_blank">GitHub ↗</a></li>
-        <li><a href={profile.links.linkedin} rel="me noopener" target="_blank">LinkedIn ↗</a></li>
+      <div>
+        <h1>{profile.name}</h1>
+        <p class="muted">{profile.role} in {profile.location}</p>
+      </div>
+    </div>
+
+    <nav aria-label="Contact">
+      <ul class="links" role="list">
+        <li><a href={resume}>Resume</a></li>
+        <li><a href={profile.links.github} rel="me">GitHub</a></li>
+        <li><a href={profile.links.linkedin} rel="me">LinkedIn</a></li>
         <li><a href={`mailto:${profile.email}`}>Email</a></li>
       </ul>
-    </div>
+    </nav>
   </header>
 
-  <main id="main" class="wrap">
-    <section id="experience" aria-labelledby="h-experience">
-      <h2 id="h-experience" class="mono"><span>01</span> Experience</h2>
+  <main id="main" class="page">
+    <section aria-labelledby="experience">
+      <h2 id="experience">Experience</h2>
       <Experience />
     </section>
 
-    <section id="projects" aria-labelledby="h-projects">
-      <h2 id="h-projects" class="mono"><span>02</span> Projects</h2>
+    <section aria-labelledby="projects">
+      <h2 id="projects">Projects</h2>
       <Projects />
     </section>
   </main>
 
-  <footer class="wrap mono muted">
-    <span>© {year} {profile.name}</span>
+  <footer class="page muted">
+    <p>{profile.name}, {new Date().getFullYear()}</p>
   </footer>
-
-  <div class="toast mono" role="status" aria-live="polite"></div>
-  <Palette />
 </Base>
 
 <style>
-  .wrap {
-    width: min(var(--measure), 100% - 2 * var(--gutter));
+  .page {
+    width: min(var(--width), 100% - 2 * var(--gutter));
     margin-inline: auto;
   }
 
   .skip {
     position: absolute;
     left: 1rem;
-    top: -3rem;
-    z-index: 10;
-    padding: 0.5rem 0.8rem;
-    background: var(--fg);
+    top: -4rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--text);
     color: var(--bg);
-    border-radius: 6px;
   }
 
   .skip:focus {
     top: 1rem;
   }
 
-  /* ---------- hero ---------- */
-
-  .hero {
-    position: relative;
-    isolation: isolate;
-    padding-bottom: clamp(2.5rem, 6vw, 4rem);
-  }
-
-  .hero :global(.field) {
-    z-index: -1;
-  }
-
-  .bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-block: 1.5rem;
-  }
-
-  .mark {
-    font-weight: 600;
-    text-decoration: none;
-    letter-spacing: 0.02em;
-  }
-
-  .tools {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  button {
-    display: inline-flex;
-    align-items: center;
-    gap: 2px;
-    min-width: 2rem;
-    min-height: 2rem;
-    justify-content: center;
-    padding: 0.35rem;
-    border: 0;
-    background: none;
-    color: var(--muted);
-    cursor: pointer;
-    border-radius: 6px;
-    transition: color 0.2s;
-  }
-
-  button:hover {
-    color: var(--fg);
-  }
-
-  .menu {
-    display: none;
-  }
-
-  @media (pointer: coarse) {
-    .keys {
-      display: none;
-    }
-
-    .menu {
-      display: block;
-    }
+  header {
+    padding-top: clamp(3rem, 12vw, 6rem);
   }
 
   .intro {
-    padding-top: clamp(2.5rem, 9vw, 5.5rem);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
 
   .intro :global(.portrait) {
-    display: block;
-    width: 5.5rem;
-    height: 5.5rem;
-    margin-bottom: 1.5rem;
-    border-radius: 1.4rem;
+    flex: none;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
     object-fit: cover;
-    background: var(--surface);
-    box-shadow:
-      0 0 0 1px color-mix(in oklch, var(--fg) 8%, transparent),
-      0 12px 30px -12px rgb(0 0 0 / 0.35);
   }
 
   h1 {
-    font-size: var(--step-3);
+    font-size: 1.5rem;
     font-weight: 600;
-    letter-spacing: -0.045em;
-    line-height: 1;
-  }
-
-  .sub {
-    margin-top: 0.9rem;
-    font-size: 0.9rem;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
   }
 
   .links {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75rem 1.25rem;
-    margin-top: 1.75rem;
+    column-gap: 1.25rem;
+    margin-top: 1rem;
   }
 
-  .cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    padding: 0.45rem 0.85rem;
-    border-radius: 999px;
-    background: var(--fg);
-    color: var(--bg);
-    text-decoration: none;
-    transition: background-color 0.2s, translate 0.2s var(--ease);
+  /* Padding keeps each link an easy tap target without spreading the row out. */
+  .links a {
+    display: inline-block;
+    padding-block: 0.5rem;
   }
-
-  .cta:hover {
-    background: var(--accent);
-  }
-
-  .cta:hover svg {
-    translate: 0 1px;
-  }
-
-  .cta svg {
-    transition: translate 0.2s var(--ease);
-  }
-
-  /* ---------- sections ---------- */
 
   section {
-    padding-block: clamp(2rem, 5vw, 3rem);
+    margin-top: 3.5rem;
   }
 
   h2 {
-    display: flex;
-    gap: 0.75rem;
     margin-bottom: 1.5rem;
-    font-weight: 500;
+    font-size: 0.875rem;
+    font-weight: 600;
     color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
   }
-
-  h2 span {
-    color: var(--accent);
-  }
-
 
   footer {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    padding-block: 2.5rem;
-    border-top: 1px solid var(--faint);
-    margin-top: 1.5rem;
+    margin-top: 4rem;
+    padding-block: 2rem 3rem;
+    border-top: 1px solid var(--rule);
+    font-size: 0.875rem;
   }
 
-  .toast {
-    position: fixed;
-    left: 50%;
-    bottom: 1.5rem;
-    translate: -50% 1rem;
-    padding: 0.5rem 0.9rem;
-    border-radius: 999px;
-    background: var(--fg);
-    color: var(--bg);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s, translate 0.3s var(--ease);
-  }
+  @media print {
+    header {
+      padding-top: 0;
+    }
 
-  .toast.show {
-    opacity: 1;
-    translate: -50% 0;
-  }
-
-  @media (max-width: 36rem) {
-    .intro :global(.portrait) {
-      width: 4.5rem;
-      height: 4.5rem;
-      border-radius: 1.1rem;
+    .skip {
+      display: none;
     }
   }
 </style>
-
-<script>
-  import { toggleTheme } from '../scripts/theme';
-
-  // Show the platform's modifier key.
-  if (!/Mac|iPhone|iPad/.test(navigator.userAgent)) {
-    document.querySelectorAll('[data-mod]').forEach((k) => (k.textContent = 'Ctrl'));
-  }
-
-  document.querySelector('[data-action=theme]')?.addEventListener('click', toggleTheme);
-  document.querySelector('[data-action=palette]')?.addEventListener('click', () =>
-    document.dispatchEvent(new Event('palette:open')),
-  );
-
-  // Toasts.
-  const toast = document.querySelector<HTMLElement>('.toast')!;
-  let hide = 0;
-  document.addEventListener('toast', (e) => {
-    toast.textContent = (e as CustomEvent<string>).detail;
-    toast.classList.add('show');
-    clearTimeout(hide);
-    hide = window.setTimeout(() => toast.classList.remove('show'), 1800);
-  });
-</script>
