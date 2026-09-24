@@ -137,9 +137,9 @@ export const projects: Project[] = [
   },
   {
     name: 'Music Generation',
-    blurb: 'Seq2seq LSTM trained on 2,000+ MIDI files',
-    stack: ['TensorFlow', 'Keras'],
-    source: 'https://colab.research.google.com/drive/1UsDg6tmIFOnkcv2W6baZCRSZXRJBvvjX?usp=sharing',
+    blurb: 'PyTorch package that learns melodies from MIDI and writes new ones, with Transformer and LSTM models and key-aware sampling',
+    stack: ['Python', 'PyTorch', 'Transformer', 'LSTM'],
+    source: 'https://github.com/Edwin580/music-generator',
   },
 ];
 
