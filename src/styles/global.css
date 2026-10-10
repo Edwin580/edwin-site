@@ -7,6 +7,7 @@
   --rule: #e4e4e1;
   --underline: #b5b5b0;
   --button-border: #cfcfca;
+  --tag-bg: #f1f1ee;
 
   --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --width: 38rem;
@@ -21,6 +22,7 @@
     --rule: #2c2c2c;
     --underline: #5e5e5e;
     --button-border: #474747;
+    --tag-bg: #1f1f1f;
   }
 }
 
@@ -79,6 +81,22 @@ ol[role='list'] {
   color: var(--muted);
 }
 
+/* Tech stack chips, shared by roles and projects. */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.tags li {
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+  background: var(--tag-bg);
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -99,6 +117,19 @@ ol[role='list'] {
     --bg: #fff;
     --text: #000;
     --muted: #444;
+    --tag-bg: transparent;
+  }
+
+  .tags {
+    column-gap: 0;
+  }
+
+  .tags li {
+    padding: 0;
+  }
+
+  .tags li + li::before {
+    content: ', ';
   }
 
   a {

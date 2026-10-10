@@ -7,8 +7,17 @@ import { projects } from '../data/profile';
     projects.map((p) => (
       <li>
         <h3>{p.name}</h3>
-        <p class="description">{p.description}</p>
-        <p class="muted stack">{p.stack.join(', ')}</p>
+        <p class="muted summary">{p.summary}</p>
+        <ul class="points">
+          {p.highlights.map((h) => (
+            <li>{h}</li>
+          ))}
+        </ul>
+        <ul class="tags" role="list" aria-label="Stack">
+          {p.stack.map((t) => (
+            <li>{t}</li>
+          ))}
+        </ul>
         <p class="actions">
           {p.live && (
             <a class="button primary" href={p.live}>
@@ -35,14 +44,27 @@ import { projects } from '../data/profile';
     font-weight: 600;
   }
 
-  .description {
-    margin-top: 0.25rem;
+  .summary {
+    margin-top: 0.15rem;
     text-wrap: pretty;
   }
 
-  .stack {
-    margin-top: 0.4rem;
-    font-size: 0.875rem;
+  .points {
+    margin-top: 0.6rem;
+    padding-left: 1.1rem;
+    list-style-type: disc;
+  }
+
+  .points li + li {
+    margin-top: 0.3rem;
+  }
+
+  .points li::marker {
+    color: var(--muted);
+  }
+
+  .tags {
+    margin-top: 0.75rem;
   }
 
   .actions {
@@ -78,7 +100,17 @@ import { projects } from '../data/profile';
     opacity: 0.85;
   }
 
+  @media (max-width: 30rem) {
+    .points {
+      padding-left: 1rem;
+    }
+  }
+
   @media print {
+    .projects > li {
+      break-inside: avoid;
+    }
+
     .actions {
       display: none;
     }

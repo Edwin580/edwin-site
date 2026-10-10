@@ -19,7 +19,10 @@ export interface Role {
 
 export interface Project {
   name: string;
-  description: string;
+  /** One line saying what it is. */
+  summary: string;
+  /** How it works, from the source. */
+  highlights: string[];
   stack: string[];
   /** Live site, when there is one. */
   live?: string;
@@ -123,25 +126,41 @@ export const roles: Role[] = [
 
 export const projects: Project[] = [
   {
-    name: 'RSVP Reader',
-    description:
-      'A speed-reading app. Open an EPUB, PDF, or text file and it shows the book one word at a time, with search and saved progress.',
-    stack: ['React', 'TypeScript'],
+    name: 'Chapter',
+    summary: 'An offline-first RSVP speed reader for EPUB, PDF, and text files, installable as a PWA.',
+    highlights: [
+      'Parses EPUBs with JSZip and DOMParser (OPF manifest and spine) and PDFs with pdf.js in Web Workers, reading pages in parallel on multi-core machines and stripping running headers.',
+      'Times each word against performance.now() deadlines so playback doesn’t drift, weighting length, punctuation, rare words, and first mentions of names, then normalizing so the chosen WPM is the true average.',
+      'Full-text search runs in a Web Worker over an Int32Array inverted index, with stemming, prefix matching, and an edit-distance fallback for typos.',
+      'Books, progress, and bookmarks persist in IndexedDB. CI runs 196 Vitest unit tests and 67 Playwright tests on desktop and mobile.',
+    ],
+    stack: ['React', 'TypeScript', 'Vite', 'pdf.js', 'IndexedDB', 'Web Workers'],
     live: 'https://edwin580.github.io/RSVP-Reader/',
     source: 'https://github.com/Edwin580/RSVP-Reader',
   },
   {
     name: 'Moral Pop-Out',
-    description:
-      'An online experiment testing whether a word’s emotional tone changes how bright a gray square looks, run with real participants.',
-    stack: ['JavaScript', 'jsPsych'],
+    summary: 'A jsPsych experiment, run on Prolific, testing whether a word’s emotional valence biases how bright a gray square looks.',
+    highlights: [
+      'A custom jsPsych plugin sequences fixation, word, and probe with requestAnimationFrame, logging measured display durations and reaction times on the performance clock.',
+      'Seeded, reproducible randomization of 80 trials, with a repeat-detection cover task, an accuracy-gated practice block, and a valence-rating manipulation check.',
+      'Analysis runs in the browser and in Node: response rates by valence and cover-task d′ with the Hautus log-linear correction. Results export as CSV.',
+      'CI verifies the subresource-integrity hashes of CDN scripts, then runs node:test unit tests and Playwright end-to-end tests.',
+    ],
+    stack: ['JavaScript', 'jsPsych', 'Playwright'],
     live: 'https://edwin580.github.io/Prolific-Experiment/',
     source: 'https://github.com/Edwin580/Prolific-Experiment',
   },
   {
     name: 'Music Generation',
-    description: 'A Python package that learns melodies from MIDI files and writes new ones, using Transformer and LSTM models.',
-    stack: ['Python', 'PyTorch'],
+    summary: 'A PyTorch package that trains melody models on MIDI files and generates new music from a prompt.',
+    highlights: [
+      'A decoder-only Transformer with rotary position embeddings, pre-LayerNorm, and a sliding-window KV cache, compared against token and piano-roll LSTM baselines.',
+      'A REMI-style event tokenizer with tempo-aware quantization. Sampling supports temperature, top-k, and nucleus sampling, a grammar mask, and key constraints estimated with Krumhansl–Schmuckler.',
+      'Training uses AdamW with warm-up and cosine decay, mixed precision, and early stopping. Evaluation covers perplexity and Yang & Lerch musical metrics.',
+      'YAML-configured CLI, with 66 pytest cases run on Python 3.10–3.12 in CI.',
+    ],
+    stack: ['Python', 'PyTorch', 'pretty_midi'],
     source: 'https://github.com/Edwin580/music-generator',
   },
 ];
