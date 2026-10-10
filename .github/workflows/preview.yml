@@ -11,8 +11,9 @@ permissions:
   contents: write
   pull-requests: write
 
+# One queue per PR, separate from production deploys (see deploy.yml).
 concurrency:
-  group: gh-pages
+  group: pr-preview-${{ github.event.number }}
   cancel-in-progress: false
 
 jobs:

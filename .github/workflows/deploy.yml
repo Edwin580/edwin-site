@@ -11,8 +11,10 @@ on:
 permissions:
   contents: write
 
+# Its own queue, so preview runs can never displace a waiting production deploy.
+# A newer push to main still replaces an older waiting one, which is fine: it includes those changes.
 concurrency:
-  group: gh-pages
+  group: gh-pages-production
   cancel-in-progress: false
 
 jobs:
@@ -35,3 +37,5 @@ jobs:
           branch: gh-pages
           clean-exclude: pr-preview/
           force: false
+          # Previews push to the same branch in parallel; rebase and retry if one lands first.
+          attempt-limit: 5
