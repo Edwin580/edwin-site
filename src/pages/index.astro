@@ -12,49 +12,58 @@ const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume
 <Base>
   <a class="skip" href="#main">Skip to content</a>
 
-  <header class="page">
-    <div class="intro">
-      <Picture
-        src={portrait}
-        alt=""
-        widths={[64, 128, 192]}
-        sizes="64px"
-        formats={['avif', 'webp']}
-        loading="eager"
-        fetchpriority="high"
-        class="portrait"
-      />
-      <div>
-        <h1>{profile.name}</h1>
-        <p class="muted">{profile.role} in {profile.location}</p>
+  <div class="page">
+    <header>
+      <div class="intro">
+        <Picture
+          src={portrait}
+          alt=""
+          widths={[64, 96, 128, 192, 288]}
+          sizes="(min-width: 64rem) 96px, 64px"
+          formats={['avif', 'webp']}
+          loading="eager"
+          fetchpriority="high"
+          class="portrait"
+        />
+        <div>
+          <h1>{profile.name}</h1>
+          <p class="muted">{profile.role} in {profile.location}</p>
+        </div>
       </div>
-    </div>
 
-    <nav aria-label="Contact">
-      <ul class="links" role="list">
-        <li><a href={resume}>Resume</a></li>
-        <li><a href={profile.links.github} rel="me">GitHub</a></li>
-        <li><a href={profile.links.linkedin} rel="me">LinkedIn</a></li>
-        <li><a href={`mailto:${profile.email}`}>Email</a></li>
-      </ul>
-    </nav>
-  </header>
+      <nav aria-label="Contact">
+        <ul class="links" role="list">
+          <li><a href={resume}>Resume</a></li>
+          <li><a href={profile.links.github} rel="me">GitHub</a></li>
+          <li><a href={profile.links.linkedin} rel="me">LinkedIn</a></li>
+          <li><a href={`mailto:${profile.email}`}>Email</a></li>
+        </ul>
+      </nav>
 
-  <main id="main" class="page">
-    <section aria-labelledby="experience">
-      <h2 id="experience">Experience</h2>
-      <Experience />
-    </section>
+      <nav class="toc" aria-label="Sections">
+        <ul role="list">
+          <li><a href="#experience">Experience</a></li>
+          <li><a href="#projects">Projects</a></li>
+        </ul>
+      </nav>
+    </header>
 
-    <section aria-labelledby="projects">
-      <h2 id="projects">Projects</h2>
-      <Projects />
-    </section>
-  </main>
+    <main id="main">
+      <section aria-labelledby="experience">
+        <h2 id="experience">Experience</h2>
+        <Experience />
+      </section>
 
-  <footer class="page muted">
-    <p>{profile.name}, {new Date().getFullYear()}</p>
-  </footer>
+      <section aria-labelledby="projects">
+        <h2 id="projects">Projects</h2>
+        <Projects />
+      </section>
+    </main>
+
+    <footer class="muted">
+      <p>{profile.name}, {new Date().getFullYear()}</p>
+    </footer>
+  </div>
 </Base>
 
 <style>
@@ -114,11 +123,17 @@ const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume
     padding-block: 0.5rem;
   }
 
+  /* The section list only earns its place beside the content on wide screens. */
+  .toc {
+    display: none;
+  }
+
   section {
     margin-top: 3.5rem;
   }
 
   h2 {
+    scroll-margin-top: 3rem;
     margin-bottom: 1.5rem;
     font-size: 0.875rem;
     font-weight: 600;
@@ -132,12 +147,89 @@ const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume
     font-size: 0.875rem;
   }
 
+  /* Wide screens: profile in a sticky column on the left, content on the right. */
+  @media screen and (min-width: 64rem) {
+    .page {
+      --width: 68rem;
+      display: grid;
+      grid-template-columns: 17rem minmax(0, 1fr);
+      column-gap: clamp(3rem, 6vw, 6rem);
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      align-self: start;
+      padding-block: 6rem 2rem;
+    }
+
+    .intro {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .intro :global(.portrait) {
+      width: 6rem;
+      height: 6rem;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+    }
+
+    .links {
+      flex-direction: column;
+      margin-top: 1.5rem;
+    }
+
+    .links a {
+      padding-block: 0.25rem;
+    }
+
+    .toc {
+      display: block;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--rule);
+      font-size: 0.9375rem;
+    }
+
+    .toc a {
+      display: inline-block;
+      padding-block: 0.25rem;
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .toc a:hover {
+      color: var(--text);
+    }
+
+    main {
+      padding-top: 6rem;
+    }
+
+    main > section:first-child {
+      margin-top: 0;
+    }
+
+    section {
+      margin-top: 5rem;
+    }
+
+    footer {
+      grid-column: 2;
+      margin-top: 5rem;
+    }
+  }
+
   @media print {
     header {
       padding-top: 0;
     }
 
-    .skip {
+    .skip,
+    .toc {
       display: none;
     }
   }

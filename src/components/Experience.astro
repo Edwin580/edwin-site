@@ -40,7 +40,11 @@ const logos = new Map(
               <li>{h}</li>
             ))}
           </ul>
-          <p class="muted stack">{r.stack.join(', ')}</p>
+          <ul class="tags" role="list" aria-label="Stack">
+            {r.stack.map((t) => (
+              <li>{t}</li>
+            ))}
+          </ul>
         </div>
       </li>
     ))
@@ -118,9 +122,8 @@ const logos = new Map(
     color: var(--muted);
   }
 
-  .stack {
-    margin-top: 0.6rem;
-    font-size: 0.875rem;
+  .tags {
+    margin-top: 0.75rem;
   }
 
   /* On phones the logo stays beside the company, the dates drop under it,
