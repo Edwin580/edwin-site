@@ -18,6 +18,8 @@ export interface Role {
 }
 
 export interface Project {
+  /** Also the screenshot file name in src/assets/projects/. */
+  id: string;
   name: string;
   /** One line saying what it is. */
   summary: string;
@@ -128,6 +130,7 @@ export const roles: Role[] = [
 
 export const projects: Project[] = [
   {
+    id: 'receipts',
     name: 'Receipts',
     summary:
       'A query engine in Rust, compiled to WebAssembly, that lets you click any number computed from NYC 311 data and see the rows behind it.',
@@ -142,6 +145,7 @@ export const projects: Project[] = [
     source: 'https://github.com/Edwin580/receipts-engine',
   },
   {
+    id: 'chapter',
     name: 'Chapter',
     summary: 'An offline-first RSVP speed reader for EPUB, PDF, and text files, installable as a PWA.',
     highlights: [
@@ -155,6 +159,7 @@ export const projects: Project[] = [
     source: 'https://github.com/Edwin580/RSVP-Reader',
   },
   {
+    id: 'music-generation',
     name: 'Music Generation',
     summary:
       'A PyTorch melody model that continues a musical prompt, with a demo that runs the trained Transformer in your browser.',
@@ -169,6 +174,7 @@ export const projects: Project[] = [
     source: 'https://github.com/Edwin580/music-generator',
   },
   {
+    id: 'morality-pop-out',
     name: 'Does Morality Pop Out?',
     summary:
       'An EEG replication of Gantman et al. (2020) with 34 participants, published as an interactive page that refits the statistics in the browser.',
@@ -183,6 +189,7 @@ export const projects: Project[] = [
     source: 'https://github.com/Edwin580/EEG-Study-Replication',
   },
   {
+    id: 'brightness-perception',
     name: 'Brightness Perception',
     summary:
       'A jsPsych experiment, run on Prolific, testing whether a word’s emotional valence biases how bright a gray square looks.',
