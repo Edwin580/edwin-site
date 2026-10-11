@@ -24,8 +24,8 @@ export interface Project {
   /** How it works, from the source. */
   highlights: string[];
   stack: string[];
-  /** Live site, when there is one. */
-  live?: string;
+  /** Live site. Every project listed here should have one. */
+  live: string;
   source: string;
 }
 
@@ -126,6 +126,20 @@ export const roles: Role[] = [
 
 export const projects: Project[] = [
   {
+    name: 'Receipts',
+    summary:
+      'A query engine in Rust, compiled to WebAssembly, that lets you click any number computed from NYC 311 data and see the rows behind it.',
+    highlights: [
+      'Runs over content-addressed Arrow IPC snapshots in 64Ki-row chunks. The browser re-derives every BLAKE3 hash on load and refuses data that doesn’t match.',
+      'Captures lineage at every operator (selection vectors, CSR group membership) for backward and forward tracing, adding about 6% to execution time on 7.1M rows.',
+      'Computes exact counterfactuals: it re-derives a result without chosen rows, recomputing only the affected groups when it can, and matches a full re-run bit for bit.',
+      'The Rayon-parallel WASM build loads and verifies all 7.1M rows in under 2 seconds. Nine workspace crates, property tests, and a pyarrow differential oracle.',
+    ],
+    stack: ['Rust', 'WebAssembly', 'Apache Arrow', 'BLAKE3', 'Rayon'],
+    live: 'https://edwin580.github.io/receipts-engine/',
+    source: 'https://github.com/Edwin580/receipts-engine',
+  },
+  {
     name: 'Chapter',
     summary: 'An offline-first RSVP speed reader for EPUB, PDF, and text files, installable as a PWA.',
     highlights: [
@@ -139,8 +153,37 @@ export const projects: Project[] = [
     source: 'https://github.com/Edwin580/RSVP-Reader',
   },
   {
-    name: 'Moral Pop-Out',
-    summary: 'A jsPsych experiment, run on Prolific, testing whether a word’s emotional valence biases how bright a gray square looks.',
+    name: 'Music Generation',
+    summary:
+      'A PyTorch melody model that continues a musical prompt, with a demo that runs the trained Transformer in your browser.',
+    highlights: [
+      'A decoder-only Transformer with rotary position embeddings, pre-LayerNorm, and a sliding-window KV cache, compared against token and piano-roll LSTM baselines.',
+      'A REMI-style event tokenizer with tempo-aware quantization. Sampling supports temperature, top-k, and nucleus sampling, a grammar mask, and key constraints estimated with Krumhansl–Schmuckler.',
+      'The demo reimplements the forward pass in JavaScript over 1.6 MB of float16 weights in a Web Worker, parity-tested against the PyTorch logits.',
+      'Trained with AdamW, warm-up and cosine decay, and early stopping, and evaluated with perplexity and Yang & Lerch musical metrics. 84 pytest cases run on Python 3.10–3.12 in CI.',
+    ],
+    stack: ['Python', 'PyTorch', 'JavaScript', 'pretty_midi'],
+    live: 'https://edwin580.github.io/music-generator/',
+    source: 'https://github.com/Edwin580/music-generator',
+  },
+  {
+    name: 'Does Morality Pop Out?',
+    summary:
+      'An EEG replication of Gantman et al. (2020) with 34 participants, published as an interactive page that refits the statistics in the browser.',
+    highlights: [
+      'Found a bug in the original analysis: R’s gee() only clusters contiguous rows, so the published models fit about 5,000 one-trial clusters instead of 34 participants. Fixing it changes one conclusion.',
+      'Ported the gee package’s exchangeable-correlation GEE with sandwich variance to JavaScript, matching 66 reference fits from R to about 1e-12.',
+      'Compressed 1.5 GB of EEG data into 2.3 MB of per-participant moments in 25 ms bins, so any time window can be refit in about 0.35 ms.',
+      'Includes a one-minute version of the masked word task with requestAnimationFrame timing. The full report is written in Quarto and R.',
+    ],
+    stack: ['R', 'Quarto', 'JavaScript', 'Python'],
+    live: 'https://edwin580.github.io/EEG-Study-Replication/',
+    source: 'https://github.com/Edwin580/EEG-Study-Replication',
+  },
+  {
+    name: 'Brightness Perception',
+    summary:
+      'A jsPsych experiment, run on Prolific, testing whether a word’s emotional valence biases how bright a gray square looks.',
     highlights: [
       'A custom jsPsych plugin sequences fixation, word, and probe with requestAnimationFrame, logging measured display durations and reaction times on the performance clock.',
       'Seeded, reproducible randomization of 80 trials, with a repeat-detection cover task, an accuracy-gated practice block, and a valence-rating manipulation check.',
@@ -150,18 +193,6 @@ export const projects: Project[] = [
     stack: ['JavaScript', 'jsPsych', 'Playwright'],
     live: 'https://edwin580.github.io/Prolific-Experiment/',
     source: 'https://github.com/Edwin580/Prolific-Experiment',
-  },
-  {
-    name: 'Music Generation',
-    summary: 'A PyTorch package that trains melody models on MIDI files and generates new music from a prompt.',
-    highlights: [
-      'A decoder-only Transformer with rotary position embeddings, pre-LayerNorm, and a sliding-window KV cache, compared against token and piano-roll LSTM baselines.',
-      'A REMI-style event tokenizer with tempo-aware quantization. Sampling supports temperature, top-k, and nucleus sampling, a grammar mask, and key constraints estimated with Krumhansl–Schmuckler.',
-      'Training uses AdamW with warm-up and cosine decay, mixed precision, and early stopping. Evaluation covers perplexity and Yang & Lerch musical metrics.',
-      'YAML-configured CLI, with 66 pytest cases run on Python 3.10–3.12 in CI.',
-    ],
-    stack: ['Python', 'PyTorch', 'pretty_midi'],
-    source: 'https://github.com/Edwin580/music-generator',
   },
 ];
 

@@ -19,11 +19,9 @@ import { projects } from '../data/profile';
           ))}
         </ul>
         <p class="actions">
-          {p.live && (
-            <a class="button primary" href={p.live}>
-              Visit site<span class="sr-only">: {p.name}</span>
-            </a>
-          )}
+          <a class="button primary" href={p.live}>
+            Visit site<span class="sr-only">: {p.name}</span>
+          </a>
           <a class="button" href={p.source}>
             Source code<span class="sr-only">: {p.name}</span>
           </a>
