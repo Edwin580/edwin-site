@@ -50,9 +50,11 @@ export const roles: Role[] = [
     start: '2026-06',
     end: '2026-08',
     highlights: [
-      'Built the Manual AI Columns feature end to end and shipped it to production.',
-      'Added a caching layer and a schema-level index that cut query latency by 75%.',
+      'Extended the existing AI columns architecture to add manual AI columns, which run only when explicitly triggered rather than whenever the data source changes, with cells that can be rerun individually.',
+      'Added admin model controls, so admins can disable specific models for builders.',
+      'Added a caching layer and a schema-level index that cut AI query latency by 75%.',
       'Designed a system that tracks model deprecations across Snowflake and Databricks and alerts the team in Slack.',
+      'Fixed bugs across AI columns and the PDF renderer.',
     ],
     stack: ['TypeScript', 'React', 'Snowflake', 'Databricks'],
   },
