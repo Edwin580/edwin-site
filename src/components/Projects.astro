@@ -16,34 +16,32 @@ const shots = new Map(
   {
     projects.map((p) => (
       <li class="project">
+        <h3>{p.name}</h3>
         {shots.has(p.id) && (
           // The buttons below carry the same link, so this one stays out of the tab order.
           <a class="shot" href={p.live} tabindex="-1" aria-hidden="true">
-            <Image src={shots.get(p.id)!} alt="" widths={[360, 720, 1080]} sizes="(min-width: 40rem) 18rem, 100vw" />
+            <Image src={shots.get(p.id)!} alt="" widths={[480, 960, 1440]} sizes="(min-width: 64rem) 46rem, 100vw" />
           </a>
         )}
-        <div class="head">
-          <h3>{p.name}</h3>
-          <p class="muted summary">{p.summary}</p>
-          <ul class="tags" role="list" aria-label="Stack">
-            {p.stack.map((t) => (
-              <li>{t}</li>
-            ))}
-          </ul>
-          <p class="actions">
-            <a class="button primary" href={p.live}>
-              Visit site<span class="sr-only">: {p.name}</span>
-            </a>
-            <a class="button" href={p.source}>
-              Source code<span class="sr-only">: {p.name}</span>
-            </a>
-          </p>
-        </div>
+        <p class="muted summary">{p.summary}</p>
         <ul class="points">
           {p.highlights.map((h) => (
             <li>{h}</li>
           ))}
         </ul>
+        <ul class="tags" role="list" aria-label="Stack">
+          {p.stack.map((t) => (
+            <li>{t}</li>
+          ))}
+        </ul>
+        <p class="actions">
+          <a class="button primary" href={p.live}>
+            Visit site<span class="sr-only">: {p.name}</span>
+          </a>
+          <a class="button" href={p.source}>
+            Source code<span class="sr-only">: {p.name}</span>
+          </a>
+        </p>
       </li>
     ))
   }
@@ -57,7 +55,7 @@ const shots = new Map(
 
   .shot {
     display: block;
-    margin-bottom: 1rem;
+    margin-block: 0.6rem 0.75rem;
     overflow: hidden;
     border: 1px solid var(--rule);
     border-radius: 8px;
@@ -141,30 +139,6 @@ const shots = new Map(
 
   .primary:hover {
     opacity: 0.85;
-  }
-
-  /* Wider screens: the screenshot sits beside the name, summary, and links,
-     and the bullets run underneath at full width. */
-  @media (min-width: 40rem) {
-    .project {
-      display: grid;
-      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-      column-gap: 1.5rem;
-      align-items: start;
-    }
-
-    .shot {
-      margin-bottom: 0;
-    }
-
-    .head {
-      align-self: center;
-    }
-
-    .points {
-      grid-column: 1 / -1;
-      margin-top: 1.25rem;
-    }
   }
 
   @media (max-width: 30rem) {
