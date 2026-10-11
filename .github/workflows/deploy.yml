@@ -29,8 +29,9 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
-          SITE: https://${{ github.repository_owner }}.github.io
-          BASE_PATH: /${{ github.event.repository.name }}/
+          # Served at the root of the custom domain (Settings → Pages → Custom domain).
+          SITE: https://edwincortazo.com
+          BASE_PATH: /
       - uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: dist

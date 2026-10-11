@@ -14,10 +14,11 @@ npm run build    # astro check + static build to dist/
 
 ## Deploys
 
-- **Production:** every push to `main` builds the site and publishes it to the `gh-pages` branch
-  (`.github/workflows/deploy.yml`).
+- **Production:** every push to `main` builds the site and publishes it to the `gh-pages` branch, served at
+  `https://edwincortazo.com` (`.github/workflows/deploy.yml`).
 - **Previews:** every commit on a pull request is published to
-  `https://edwin580.github.io/edwin-site/pr-preview/pr-<number>/`, and a comment on the PR links to it
+  `https://edwincortazo.com/pr-preview/pr-<number>/`, and a comment on the PR links to it
   (`.github/workflows/preview.yml`). Previews are removed when the PR closes and aren't indexed by search engines.
 
-GitHub Pages must be set to **Settings → Pages → Source: Deploy from a branch → `gh-pages` / root**.
+GitHub Pages must be set to **Settings → Pages → Source: Deploy from a branch → `gh-pages` / root**, with
+**Custom domain** set to `edwincortazo.com`. The deploy keeps the `CNAME` file GitHub writes to `gh-pages`.
