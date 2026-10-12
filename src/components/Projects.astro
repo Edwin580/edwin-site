@@ -1,14 +1,26 @@
 ---
 import type { ImageMetadata } from 'astro';
-import { Image } from 'astro:assets';
+import { getImage, Image } from 'astro:assets';
 import { projects } from '../data/profile';
 
 // A screenshot of each live site, at src/assets/projects/<project id>.{png,jpg,webp}.
 const files = import.meta.glob<{ default: ImageMetadata }>('../assets/projects/*.{png,jpg,jpeg,webp}', {
   eager: true,
 });
-const shots = new Map(
-  Object.entries(files).map(([path, mod]) => [path.split('/').pop()!.replace(/\.\w+$/, ''), mod.default]),
+const id = (path: string) => path.split('/').pop()!.replace(/\.\w+$/, '');
+const shots = new Map(Object.entries(files).map(([path, mod]) => [id(path), mod.default]));
+
+// A short screen recording of each live site, at src/assets/demos/<project id>.{mp4,webm} (see scripts/demos/).
+// H.264 MP4 plays almost everywhere; the VP9 WebM covers browsers built without H.264.
+// The screenshot is the poster, and stands in for the video when motion is reduced.
+const clip = (files: Record<string, string>) => new Map(Object.entries(files).map(([path, url]) => [id(path), url]));
+const mp4 = clip(import.meta.glob<string>('../assets/demos/*.mp4', { eager: true, query: '?url', import: 'default' }));
+const webm = clip(import.meta.glob<string>('../assets/demos/*.webm', { eager: true, query: '?url', import: 'default' }));
+const demos = new Set([...mp4.keys(), ...webm.keys()]);
+const posters = new Map(
+  await Promise.all(
+    [...shots].filter(([k]) => demos.has(k)).map(async ([k, src]) => [k, (await getImage({ src, width: 960, format: 'webp' })).src] as const),
+  ),
 );
 ---
 
@@ -21,6 +33,12 @@ const shots = new Map(
           // The buttons below carry the same link, so this one stays out of the tab order.
           <a class="shot" href={p.live} tabindex="-1" aria-hidden="true">
             <Image src={shots.get(p.id)!} alt="" widths={[480, 960, 1440]} sizes="(min-width: 64rem) 46rem, 100vw" />
+            {demos.has(p.id) && (
+              <video poster={posters.get(p.id)} autoplay muted loop playsinline preload="none">
+                {mp4.has(p.id) && <source src={mp4.get(p.id)} type="video/mp4" />}
+                {webm.has(p.id) && <source src={webm.get(p.id)} type="video/webm" />}
+              </video>
+            )}
           </a>
         )}
         <p class="muted summary">{p.summary}</p>
@@ -61,6 +79,25 @@ const shots = new Map(
     border-radius: 8px;
   }
 
+  .shot {
+    position: relative;
+  }
+
+  /* The video sits over the screenshot, which still sets the size and shows until the video plays. */
+  .shot video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top left;
+    transition: transform 0.2s ease;
+  }
+
+  .shot:hover video {
+    transform: scale(1.02);
+  }
+
   .shot :global(img) {
     width: 100%;
     height: auto;
@@ -77,6 +114,10 @@ const shots = new Map(
   @media (prefers-reduced-motion: reduce) {
     .shot :global(img) {
       transition: none;
+    }
+
+    .shot video {
+      display: none;
     }
   }
 
