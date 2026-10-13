@@ -1,5 +1,5 @@
 import { open, wait } from './lib.mjs';
-const m = await open('https://edwin580.github.io/music-generator/');
+const m = await open(process.env.DEMO_URL ?? 'https://edwin580.github.io/music-generator/');
 await wait(1000);
 await m.scrollTo('#a-prompt', 150, 700); await wait(900);
 // Raise the sampling temperature by dragging it; the model rewrites the continuation.

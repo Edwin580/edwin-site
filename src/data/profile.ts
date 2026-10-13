@@ -26,8 +26,8 @@ export interface Project {
   /** How it works, from the source. */
   highlights: string[];
   stack: string[];
-  /** Live site. Every project listed here should have one. */
-  live: string;
+  /** Live site, for projects that run in the browser. */
+  live?: string;
   source: string;
 }
 
@@ -146,7 +146,7 @@ export const projects: Project[] = [
   },
   {
     id: 'chapter',
-    name: 'Chapter',
+    name: 'Chapter – a reading app',
     summary: 'An offline-first RSVP speed reader for EPUB, PDF, and text files, installable as a PWA.',
     highlights: [
       'Parses EPUBs with JSZip and DOMParser (OPF manifest and spine) and PDFs with pdf.js in Web Workers, reading pages in parallel on multi-core machines and stripping running headers.',
@@ -202,6 +202,20 @@ export const projects: Project[] = [
     stack: ['JavaScript', 'jsPsych', 'Playwright'],
     live: 'https://edwin580.github.io/Prolific-Experiment/',
     source: 'https://github.com/Edwin580/Prolific-Experiment',
+  },
+  {
+    id: 'better-video',
+    name: 'better-video',
+    summary:
+      'A screen recorder for pull requests: pick an area from the tray, choose GIF or MP4, and get a small clip that zooms in on each click. A CLI does the same from a terminal or an agent.',
+    highlights: [
+      'Recording and export are separate. On Windows, a native engine grabs frames with DXGI desktop duplication, keeps only the 32×32 tiles that changed, and writes them LZ4-compressed; elsewhere ffmpeg records, and the same exporter takes over.',
+      'GIFs come from a built-in encoder: an exact palette when a clip uses 255 colours or fewer (median cut otherwise), an LZW coder, and frames that store only the rectangle that changed. MP4 uses Windows’ own H.264 encoder.',
+      'Zooms are planned like an editor would cut them: nearby clicks share one view, the camera holds still between them and moves on a critically damped spring, and no zoom hides a click.',
+      'The pointer is sampled at about 120 Hz and drawn at export as a smoothed, anti-aliased arrow, with optional click rings. For scripts and agents there is --json output, bv stop and a Claude skill. 99 tests, no network access.',
+    ],
+    stack: ['Rust', 'Win32', 'DXGI', 'ffmpeg'],
+    source: 'https://github.com/Edwin580/better-video',
   },
 ];
 
