@@ -1,0 +1,54 @@
+<!doctype html>
+<!-- A neutral page for better-video's demo to record, so it doesn't reuse another project's footage. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>To-do</title>
+<style>
+  body { margin: 0; font: 17px/1.5 system-ui, sans-serif; background: #f4f4f1; color: #1d1d1b; }
+  main { max-width: 34rem; margin: 3rem auto; padding: 1.5rem 2rem 2rem; background: #fff; border: 1px solid #ddd; border-radius: 10px; }
+  h1 { font-size: 1.5rem; margin: 0 0 1rem; }
+  form { display: flex; gap: .5rem; }
+  input[type=text] { flex: 1; font: inherit; padding: .5rem .7rem; border: 1px solid #bbb; border-radius: 6px; }
+  button { font: inherit; padding: .5rem 1rem; border: 1px solid #1d1d1b; border-radius: 6px; background: #1d1d1b; color: #fff; cursor: pointer; }
+  ul { list-style: none; padding: 0; margin: 1.2rem 0; }
+  li { display: flex; align-items: center; gap: .7rem; padding: .6rem 0; border-bottom: 1px solid #eee; }
+  li input { width: 1.2rem; height: 1.2rem; }
+  li.done span { color: #999; text-decoration: line-through; }
+  .filters { display: flex; gap: .4rem; }
+  .filters button { background: #fff; color: #1d1d1b; border-color: #ccc; padding: .3rem .8rem; }
+  .filters button[aria-pressed=true] { border-color: #1d1d1b; font-weight: 600; }
+</style>
+</head>
+<body>
+<main>
+  <h1>To-do</h1>
+  <form id="add"><input type="text" id="text" placeholder="Add a task" aria-label="Task"><button>Add</button></form>
+  <ul id="list"></ul>
+  <div class="filters">
+    <button type="button" data-f="all" aria-pressed="true">All</button>
+    <button type="button" data-f="open">Open</button>
+    <button type="button" data-f="done">Done</button>
+  </div>
+</main>
+<script>
+  const list = document.getElementById('list');
+  const add = (t) => {
+    const li = document.createElement('li');
+    li.innerHTML = '<input type="checkbox"><span></span>';
+    li.querySelector('span').textContent = t;
+    li.querySelector('input').onchange = (e) => li.classList.toggle('done', e.target.checked);
+    list.append(li);
+  };
+  ['Reply to review comments', 'Fix the flaky test', 'Update the changelog'].forEach(add);
+  document.getElementById('add').onsubmit = (e) => {
+    e.preventDefault(); const i = document.getElementById('text');
+    if (i.value.trim()) add(i.value.trim()); i.value = '';
+  };
+  document.querySelectorAll('.filters button').forEach((b) => b.onclick = () => {
+    document.querySelectorAll('.filters button').forEach((x) => x.setAttribute('aria-pressed', x === b));
+    for (const li of list.children) li.hidden = b.dataset.f === 'open' ? li.classList.contains('done') : b.dataset.f === 'done' ? !li.classList.contains('done') : false;
+  });
+</script>
+</body>
+</html>

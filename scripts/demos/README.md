@@ -24,3 +24,11 @@ To record a branch that isn't live yet, serve it locally and point the driver at
 ffmpeg -ss 0.3 -i raw.mp4 -frames:v 1 -vf scale=960:-2 -q:v 4 ../../src/assets/projects/receipts.jpg
 ```
 
+`better-video` has its own script, since its clip shows bv itself and none of the other projects. On a 2048x640 screen, a
+real terminal on the left runs `bv doctor` and `bv record todo.mp4 -z` while a second bv records the terminal, and
+the sample page in `sample/todo.html` on the right gets clicked. The clip cuts from the terminal to `todo.mp4` and back:
+
+```sh
+Xvfb :98 -screen 0 2048x640x24 &
+./better-video.sh raw.mp4    # needs xterm too
+```

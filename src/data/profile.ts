@@ -146,7 +146,7 @@ export const projects: Project[] = [
   },
   {
     id: 'chapter',
-    name: 'Chapter',
+    name: 'Chapter – a reading app',
     summary: 'An offline-first RSVP speed reader for EPUB, PDF, and text files, installable as a PWA.',
     highlights: [
       'Parses EPUBs with JSZip and DOMParser (OPF manifest and spine) and PDFs with pdf.js in Web Workers, reading pages in parallel on multi-core machines and stripping running headers.',
