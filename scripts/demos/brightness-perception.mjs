@@ -1,5 +1,5 @@
 import { open, wait } from './lib.mjs';
-const m = await open('https://edwin580.github.io/Prolific-Experiment/');
+const m = await open(process.env.DEMO_URL ?? 'https://edwin580.github.io/Prolific-Experiment/');
 await wait(800);
 await m.scrollTo('text=1. The task', 20, 1000); await wait(500);
 await m.click('#start', 800); await m.move(300, 450, 500);

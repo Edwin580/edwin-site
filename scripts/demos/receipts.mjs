@@ -1,5 +1,5 @@
 import { open, wait } from './lib.mjs';
-const m = await open('https://edwin580.github.io/receipts-engine/');
+const m = await open(process.env.DEMO_URL ?? 'https://edwin580.github.io/receipts-engine/');
 const { page } = m;
 await m.scrollTo('#type', 200, 600); await wait(800);
 // Pick a complaint type and a place; the answer is recomputed in the browser.

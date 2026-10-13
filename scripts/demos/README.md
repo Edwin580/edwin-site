@@ -15,3 +15,12 @@ pip install python-xlib
 ffmpeg -i raw.mp4 -an -vf "scale=960:-2,fps=24" -c:v libx264 -preset veryslow -crf 30 -pix_fmt yuv420p \
   -movflags +faststart ../../src/assets/demos/receipts.mp4
 ```
+
+To record a branch that isn't live yet, serve it locally and point the driver at it with `DEMO_URL`, for example
+`DEMO_URL=http://localhost:8104/ ./rec.sh receipts.mjs raw.mp4 -z --zoom-level 1.5`. The poster in
+`src/assets/projects/<id>.jpg` is a frame from the start of the recording:
+
+```sh
+ffmpeg -ss 0.3 -i raw.mp4 -frames:v 1 -vf scale=960:-2 -q:v 4 ../../src/assets/projects/receipts.jpg
+```
+

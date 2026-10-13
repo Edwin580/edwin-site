@@ -1,5 +1,5 @@
 import { open, wait } from './lib.mjs';
-const m = await open('https://edwin580.github.io/RSVP-Reader/');
+const m = await open(process.env.DEMO_URL ?? 'https://edwin580.github.io/RSVP-Reader/');
 const { page } = m;
 await wait(900);
 // Browse the free catalog and add a book to the library.

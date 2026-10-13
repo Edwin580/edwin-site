@@ -1,5 +1,5 @@
 import { open, wait } from './lib.mjs';
-const m = await open('https://edwin580.github.io/EEG-Study-Replication/');
+const m = await open(process.env.DEMO_URL ?? 'https://edwin580.github.io/EEG-Study-Replication/');
 await wait(1000);
 await m.scrollTo('#exposure', 180, 800); await wait(500);
 // Run a few trials of the masked word task.
