@@ -28,7 +28,11 @@ ffmpeg -ss 0.3 -i raw.mp4 -frames:v 1 -vf scale=960:-2 -q:v 4 ../../src/assets/p
 real terminal on the left runs `bv doctor` and `bv record todo.mp4 -z` while a second bv records the terminal, and
 the sample page in `sample/todo.html` on the right gets clicked. The clip cuts from the terminal to `todo.mp4` and back:
 
+The tray app's area picker and options bar (GIF or MP4, size, clicks, zoom) only run on Windows, so the clip opens
+with a crop of a real Windows recording of them, `pr15-picker.gif` from better-video's `pr-assets` branch:
+
 ```sh
 Xvfb :98 -screen 0 2048x640x24 &
-./better-video.sh raw.mp4    # needs xterm too
+git -C ../better-video show origin/pr-assets:pr15-picker.gif > picker.gif
+./better-video.sh raw.mp4 picker.gif    # needs xterm too
 ```

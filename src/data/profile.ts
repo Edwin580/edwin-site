@@ -207,14 +207,14 @@ export const projects: Project[] = [
     id: 'better-video',
     name: 'better-video',
     summary:
-      'A command-line screen recorder that turns a clip into a small MP4 or GIF for a pull request, zooming in on each click so reviewers can see what changed.',
+      'A screen recorder for pull requests: pick an area from the tray, choose GIF or MP4, and get a small clip that zooms in on each click. A CLI does the same from a terminal or an agent.',
     highlights: [
-      'Recording and export are separate: ffmpeg grabs the screen into a visually lossless MKV while a background thread samples the cursor every 8 ms into a JSON track, so recording stays cheap and a clip can be re-exported with different settings.',
-      'A zoom planner picks a viewport for every frame, easing toward the cursor with a frame-rate-independent time constant, holding after each click and clamping to the screen.',
-      'Zoomed frames are decoded to raw RGBA, cropped and scaled bilinearly in one pass with taps precomputed per frame, then piped back to ffmpeg. GIFs use a one-pass palettegen/paletteuse tuned for static UI.',
-      'Two crates (a core library and the bv CLI) with unit tests for the planner and renderer. It recorded every demo on this page.',
+      'Recording and export are separate. On Windows, a native engine grabs frames with DXGI desktop duplication, keeps only the 32×32 tiles that changed, and writes them LZ4-compressed; elsewhere ffmpeg records, and the same exporter takes over.',
+      'GIFs come from a built-in encoder: an exact palette when a clip uses 255 colours or fewer (median cut otherwise), an LZW coder, and frames that store only the rectangle that changed. MP4 uses Windows’ own H.264 encoder.',
+      'Zooms are planned like an editor would cut them: nearby clicks share one view, the camera holds still between them and moves on a critically damped spring, and no zoom hides a click.',
+      'The pointer is sampled at about 120 Hz and drawn at export as a smoothed, anti-aliased arrow, with optional click rings. For scripts and agents there is --json output, bv stop and a Claude skill. 99 tests, no network access.',
     ],
-    stack: ['Rust', 'ffmpeg', 'X11'],
+    stack: ['Rust', 'Win32', 'DXGI', 'ffmpeg'],
     source: 'https://github.com/Edwin580/better-video',
   },
 ];

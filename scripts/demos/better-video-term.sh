@@ -12,7 +12,6 @@ run() {
 clear; sleep 0.8
 run "bv doctor"; sleep 1.5
 touch "$GO"
-run "bv record todo.mp4 -z -d 11 --region 1024x640+1024+0"; sleep 0.8
-run "ls -lh todo.mp4"
+run "bv record todo.mp4 -z --clicks -d 11 --region 1024x640+1024+0"; sleep 0.8
 echo "$(date +%s.%N) end" >> "$LOG"
 sleep 60
