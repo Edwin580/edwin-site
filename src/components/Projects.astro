@@ -3,14 +3,14 @@ import type { ImageMetadata } from 'astro';
 import { getImage, Image } from 'astro:assets';
 import { projects } from '../data/profile';
 
-// A screenshot of each live site, at src/assets/projects/<project id>.{png,jpg,webp}.
+// A screenshot of each project, at src/assets/projects/<project id>.{png,jpg,webp}.
 const files = import.meta.glob<{ default: ImageMetadata }>('../assets/projects/*.{png,jpg,jpeg,webp}', {
   eager: true,
 });
 const id = (path: string) => path.split('/').pop()!.replace(/\.\w+$/, '');
 const shots = new Map(Object.entries(files).map(([path, mod]) => [id(path), mod.default]));
 
-// A short screen recording of each live site, at src/assets/demos/<project id>.{mp4,webm} (see scripts/demos/).
+// A short screen recording of each project, at src/assets/demos/<project id>.{mp4,webm} (see scripts/demos/).
 // H.264 MP4 plays almost everywhere; the VP9 WebM covers browsers built without H.264.
 // The screenshot is the poster, and stands in for the video when motion is reduced.
 const clip = (files: Record<string, string>) => new Map(Object.entries(files).map(([path, url]) => [id(path), url]));
@@ -31,7 +31,7 @@ const posters = new Map(
         <h3>{p.name}</h3>
         {shots.has(p.id) && (
           // The buttons below carry the same link, so this one stays out of the tab order.
-          <a class="shot" href={p.live} tabindex="-1" aria-hidden="true">
+          <a class="shot" href={p.live ?? p.source} tabindex="-1" aria-hidden="true">
             <Image src={shots.get(p.id)!} alt="" widths={[480, 960, 1440]} sizes="(min-width: 64rem) 46rem, 100vw" />
             {demos.has(p.id) && (
               <video poster={posters.get(p.id)} autoplay muted loop playsinline preload="none">
@@ -42,21 +42,26 @@ const posters = new Map(
           </a>
         )}
         <p class="muted summary">{p.summary}</p>
-        <ul class="points">
-          {p.highlights.map((h) => (
-            <li>{h}</li>
-          ))}
-        </ul>
+        <details class="how">
+          <summary>How it works</summary>
+          <ul class="points">
+            {p.highlights.map((h) => (
+              <li>{h}</li>
+            ))}
+          </ul>
+        </details>
         <ul class="tags" role="list" aria-label="Stack">
           {p.stack.map((t) => (
             <li>{t}</li>
           ))}
         </ul>
         <p class="actions">
-          <a class="button primary" href={p.live}>
-            Visit site<span class="sr-only">: {p.name}</span>
-          </a>
-          <a class="button" href={p.source}>
+          {p.live && (
+            <a class="button primary" href={p.live}>
+              Visit site<span class="sr-only">: {p.name}</span>
+            </a>
+          )}
+          <a class={p.live ? 'button' : 'button primary'} href={p.source}>
             Source code<span class="sr-only">: {p.name}</span>
           </a>
         </p>
@@ -116,6 +121,10 @@ const posters = new Map(
       transition: none;
     }
 
+    .how summary::before {
+      transition: none;
+    }
+
     .shot video {
       display: none;
     }
@@ -131,8 +140,47 @@ const posters = new Map(
     text-wrap: pretty;
   }
 
-  .points {
+  .how {
     margin-top: 0.6rem;
+  }
+
+  .how summary {
+    width: fit-content;
+    min-height: 2.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--muted);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .how summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .how summary::before {
+    content: '';
+    width: 0.4rem;
+    height: 0.4rem;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(-45deg);
+    transition: transform 0.15s ease;
+  }
+
+  .how[open] summary::before {
+    transform: rotate(45deg);
+  }
+
+  .how summary:hover {
+    color: var(--text);
+  }
+
+  .points {
+    margin-top: 0.2rem;
     padding-left: 1.1rem;
     list-style-type: disc;
   }
@@ -194,8 +242,14 @@ const posters = new Map(
     }
 
     .shot,
-    .actions {
+    .actions,
+    .how summary {
       display: none;
+    }
+
+    /* Print the bullets whether or not the dropdown is open. */
+    .how::details-content {
+      content-visibility: visible;
     }
   }
 </style>

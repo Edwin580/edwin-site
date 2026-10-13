@@ -26,8 +26,8 @@ export interface Project {
   /** How it works, from the source. */
   highlights: string[];
   stack: string[];
-  /** Live site. Every project listed here should have one. */
-  live: string;
+  /** Live site, for projects that run in the browser. */
+  live?: string;
   source: string;
 }
 
@@ -202,6 +202,20 @@ export const projects: Project[] = [
     stack: ['JavaScript', 'jsPsych', 'Playwright'],
     live: 'https://edwin580.github.io/Prolific-Experiment/',
     source: 'https://github.com/Edwin580/Prolific-Experiment',
+  },
+  {
+    id: 'better-video',
+    name: 'better-video',
+    summary:
+      'A command-line screen recorder that turns a clip into a small MP4 or GIF for a pull request, zooming in on each click so reviewers can see what changed.',
+    highlights: [
+      'Recording and export are separate: ffmpeg grabs the screen into a visually lossless MKV while a background thread samples the cursor every 8 ms into a JSON track, so recording stays cheap and a clip can be re-exported with different settings.',
+      'A zoom planner picks a viewport for every frame, easing toward the cursor with a frame-rate-independent time constant, holding after each click and clamping to the screen.',
+      'Zoomed frames are decoded to raw RGBA, cropped and scaled bilinearly in one pass with taps precomputed per frame, then piped back to ffmpeg. GIFs use a one-pass palettegen/paletteuse tuned for static UI.',
+      'Two crates (a core library and the bv CLI) with unit tests for the planner and renderer. It recorded every demo on this page.',
+    ],
+    stack: ['Rust', 'ffmpeg', 'X11'],
+    source: 'https://github.com/Edwin580/better-video',
   },
 ];
 
