@@ -1,9 +1,7 @@
 ---
-import { Picture } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Experience from '../components/Experience.astro';
 import Projects from '../components/Projects.astro';
-import portrait from '../assets/edwin.jpg';
 import { profile } from '../data/profile';
 
 const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume}`;
@@ -15,20 +13,9 @@ const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume
   <div class="page">
     <header>
       <div class="intro">
-        <Picture
-          src={portrait}
-          alt=""
-          widths={[64, 96, 128, 192, 288]}
-          sizes="(min-width: 64rem) 96px, 64px"
-          formats={['avif', 'webp']}
-          loading="eager"
-          fetchpriority="high"
-          class="portrait"
-        />
-        <div>
-          <h1>{profile.name}</h1>
-          <p class="muted">{profile.role} in {profile.location}</p>
-        </div>
+        <h1>{profile.name}</h1>
+        <p class="title-line">{profile.role} in {profile.location}</p>
+        <p class="email"><a href={`mailto:${profile.email}`}>{profile.email}</a></p>
       </div>
 
       <nav aria-label="Contact">
@@ -36,7 +23,6 @@ const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume
           <li><a href={resume}>Resume</a></li>
           <li><a href={profile.links.github} rel="me">GitHub</a></li>
           <li><a href={profile.links.linkedin} rel="me">LinkedIn</a></li>
-          <li><a href={`mailto:${profile.email}`}>Email</a></li>
         </ul>
       </nav>
 
@@ -89,38 +75,48 @@ const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume
     padding-top: clamp(3rem, 12vw, 6rem);
   }
 
-  .intro {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .intro :global(.portrait) {
-    flex: none;
-    width: 4rem;
-    height: 4rem;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-
   h1 {
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: 600;
-    line-height: 1.25;
-    letter-spacing: -0.01em;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
   }
 
+  .title-line {
+    margin-top: 0.4rem;
+    font-size: 1.125rem;
+    line-height: 1.4;
+    color: var(--muted);
+  }
+
+  .email {
+    margin-top: 0.35rem;
+    font-size: 0.9375rem;
+  }
+
+  /* Contact links use the same bordered button as the project actions,
+     so the page has one link-button style. */
   .links {
     display: flex;
     flex-wrap: wrap;
-    column-gap: 1.25rem;
-    margin-top: 1rem;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
   }
 
-  /* Padding keeps each link an easy tap target without spreading the row out. */
   .links a {
-    display: inline-block;
-    padding-block: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.25rem;
+    padding: 0 0.85rem;
+    border: 1px solid var(--button-border);
+    border-radius: 6px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .links a:hover {
+    border-color: var(--text);
   }
 
   /* The section list only earns its place beside the content on wide screens. */
@@ -154,6 +150,35 @@ const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume
     font-size: 0.875rem;
   }
 
+  /* Narrow screens: loosen the header block and the section rhythm,
+     which felt tight once the name and title got bigger. */
+  @media (max-width: 63.99rem) {
+    .title-line {
+      margin-top: 0.55rem;
+    }
+
+    .email {
+      margin-top: 0.6rem;
+    }
+
+    .links {
+      margin-top: 1.5rem;
+    }
+
+    main > section:first-child {
+      margin-top: 1.75rem;
+      padding-top: 2.25rem;
+    }
+
+    section {
+      margin-top: 4.25rem;
+    }
+
+    h2 {
+      margin-bottom: 1.75rem;
+    }
+  }
+
   /* Wide screens: profile in a sticky column on the left, content on the right. */
   @media screen and (min-width: 64rem) {
     .page {
@@ -170,27 +195,16 @@ const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume
       padding-block: 6rem 2rem;
     }
 
-    .intro {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
-    .intro :global(.portrait) {
-      width: 6rem;
-      height: 6rem;
-    }
-
     h1 {
-      font-size: 1.75rem;
+      font-size: 2.5rem;
+    }
+
+    .title-line {
+      font-size: 1.3125rem;
     }
 
     .links {
-      flex-direction: column;
       margin-top: 1.5rem;
-    }
-
-    .links a {
-      padding-block: 0.25rem;
     }
 
     .toc {

@@ -4,11 +4,8 @@
 export type YM = `${number}-${string}`;
 
 export interface Role {
-  /** Also the logo file name in src/assets/logos/. */
   id: string;
   org: string;
-  /** Letters shown when there is no logo file; defaults to the first letter of `org`. */
-  monogram?: string;
   title: string;
   location: string;
   start: YM;
@@ -115,7 +112,6 @@ export const roles: Role[] = [
   {
     id: 'seo',
     org: 'Sponsors for Educational Opportunity',
-    monogram: 'SEO',
     title: 'Tech Developer Intern',
     location: 'New York, NY',
     start: '2024-06',
