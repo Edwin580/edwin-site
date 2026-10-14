@@ -88,6 +88,26 @@ import { roles, dateRange } from '../data/profile';
     }
   }
 
+  /* Narrow screens get more air between roles and between bullets,
+     where the long lines otherwise feel packed. */
+  @media (max-width: 48rem) {
+    .roles {
+      gap: 3rem;
+    }
+
+    .points {
+      margin-top: 0.8rem;
+    }
+
+    .points li + li {
+      margin-top: 0.55rem;
+    }
+
+    .tags {
+      margin-top: 1rem;
+    }
+  }
+
   @media print {
     .role {
       break-inside: avoid;

@@ -150,6 +150,35 @@ const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume
     font-size: 0.875rem;
   }
 
+  /* Narrow screens: loosen the header block and the section rhythm,
+     which felt tight once the name and title got bigger. */
+  @media (max-width: 63.99rem) {
+    .title-line {
+      margin-top: 0.55rem;
+    }
+
+    .email {
+      margin-top: 0.6rem;
+    }
+
+    .links {
+      margin-top: 1.5rem;
+    }
+
+    main > section:first-child {
+      margin-top: 1.75rem;
+      padding-top: 2.25rem;
+    }
+
+    section {
+      margin-top: 4.25rem;
+    }
+
+    h2 {
+      margin-bottom: 1.75rem;
+    }
+  }
+
   /* Wide screens: profile in a sticky column on the left, content on the right. */
   @media screen and (min-width: 64rem) {
     .page {
