@@ -2,8 +2,7 @@
 import '../styles/global.css';
 import { getImage } from 'astro:assets';
 import { profile } from '../data/profile';
-import portrait from '../assets/edwin.jpg';
-import card from '../assets/og.png';
+import card from '../assets/og.svg';
 
 const title = `${profile.name} · ${profile.role}`;
 const description = `${profile.name} is a ${profile.role.toLowerCase()} in ${profile.location}. Experience, projects, and resume.`;
@@ -14,13 +13,10 @@ const preview = process.env.PREVIEW ? (process.env.PR_NUMBER ?? '') : null;
 
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
-// The 1200x630 card fills link previews (LinkedIn, iMessage, Slack) without cropping;
-// see scripts/og-card.mjs. The square portrait stays the Person image for search.
-// JPEG is a third the size of the PNG. LinkedIn caches images by URL, so changing this changes what it fetches.
-const [og, photo] = await Promise.all([
-  getImage({ src: card, format: 'jpg', quality: 90 }),
-  getImage({ src: portrait, width: 600, height: 600, format: 'jpg' }),
-]);
+// The 1200x630 card fills link previews (LinkedIn, iMessage, Slack) without cropping.
+// It is text only (src/assets/og.svg), rasterized to a JPEG here at build time.
+// LinkedIn caches images by URL, so changing this changes what it fetches.
+const og = await getImage({ src: card, format: 'jpg', quality: 90 });
 const ogUrl = new URL(og.src, Astro.site).href;
 
 const jsonLd = {
@@ -30,7 +26,6 @@ const jsonLd = {
   jobTitle: profile.role,
   email: `mailto:${profile.email}`,
   url: canonical.href,
-  image: new URL(photo.src, Astro.site).href,
   sameAs: Object.values(profile.links),
 };
 ---

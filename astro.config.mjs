@@ -8,5 +8,7 @@ export default defineConfig({
   trailingSlash: 'ignore',
   // 'assets' rather than the default '_astro': GitHub Pages branch builds hide _-prefixed folders.
   build: { inlineStylesheets: 'always', assets: 'assets' },
+  // Lets the build rasterize the text-only link-preview card (src/assets/og.svg) to a JPEG.
+  image: { dangerouslyProcessSVG: true },
   compressHTML: true,
 });
