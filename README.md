@@ -3,7 +3,6 @@
 My personal site: experience, projects, and resume on one page.
 
 - All content lives in `src/data/profile.ts`. Edit roles, projects, and links there.
-- Company logos go in `src/assets/logos/`, named after the role id (for example `sigma.png`).
 - The link-preview card (`src/assets/og.png`) and the `EC` icons in `public/` are rendered from
   `scripts/og-card.html` and `public/favicon.svg`. Rerun `scripts/og-card.mjs` after changing the name or role.
 - Built with Astro as plain static HTML and CSS. It uses system fonts and ships no JavaScript.

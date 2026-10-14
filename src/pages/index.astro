@@ -1,9 +1,7 @@
 ---
-import { Picture } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Experience from '../components/Experience.astro';
 import Projects from '../components/Projects.astro';
-import portrait from '../assets/edwin.jpg';
 import { profile } from '../data/profile';
 
 const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume}`;
@@ -15,20 +13,8 @@ const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume
   <div class="page">
     <header>
       <div class="intro">
-        <Picture
-          src={portrait}
-          alt=""
-          widths={[64, 96, 128, 192, 288]}
-          sizes="(min-width: 64rem) 96px, 64px"
-          formats={['avif', 'webp']}
-          loading="eager"
-          fetchpriority="high"
-          class="portrait"
-        />
-        <div>
-          <h1>{profile.name}</h1>
-          <p class="muted">{profile.role} in {profile.location}</p>
-        </div>
+        <h1>{profile.name}</h1>
+        <p class="muted">{profile.role} in {profile.location}</p>
       </div>
 
       <nav aria-label="Contact">
@@ -87,20 +73,6 @@ const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume
 
   header {
     padding-top: clamp(3rem, 12vw, 6rem);
-  }
-
-  .intro {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .intro :global(.portrait) {
-    flex: none;
-    width: 4rem;
-    height: 4rem;
-    border-radius: 50%;
-    object-fit: cover;
   }
 
   h1 {
@@ -168,16 +140,6 @@ const resume = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}${profile.resume
       top: 0;
       align-self: start;
       padding-block: 6rem 2rem;
-    }
-
-    .intro {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
-    .intro :global(.portrait) {
-      width: 6rem;
-      height: 6rem;
     }
 
     h1 {
