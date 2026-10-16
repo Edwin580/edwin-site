@@ -57,7 +57,7 @@ export const roles: Role[] = [
       'Built a reusable cache so columns on disabled models keep their results and can be saved under a newly assigned model.',
       'Fixed bugs in AI columns and the PDF renderer.',
     ],
-    stack: ['TypeScript', 'React', 'Snowflake', 'Databricks'],
+    stack: ['TypeScript', 'React', 'SQL'],
   },
   {
     id: 'zwilling',
