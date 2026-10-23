@@ -40,7 +40,7 @@ const edwin = {
   basedIn: 'New York 🗽',
   speaks: ['TypeScript', 'Rust', 'Python', 'R', 'SQL'],
   background: 'cognitive science → software',
-  likes: ['fast things', 'exact answers', 'showing the rows behind the number'],
+  likes: ['fast things', 'exact answers', 'receipts 🧾'],
   lastSeen: 'at Sigma, making AI columns rerun on command',
 };
 ```
