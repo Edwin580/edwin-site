@@ -1,8 +1,12 @@
 <div align="center">
 
-# Edwin Cortazo
+# Hey, I'm Edwin 👋
 
-**Software engineer in New York.** Experience, projects, and resume on one page.
+<a href="https://edwincortazo.com">
+  <img src="https://readme-typing-svg.demolab.com/?font=Inter&weight=600&size=22&duration=2800&pause=900&color=8B5CF6&center=true&vCenter=true&width=560&lines=Software+engineer+in+New+York;I+build+query+engines+in+Rust+%F0%9F%A6%80;...and+speed+readers+%F0%9F%93%96;...and+melody+models+%F0%9F%8E%B5;...and+EEG+experiments+%F0%9F%A7%A0;This+repo+is+my+corner+of+the+internet" alt="Software engineer in New York. I build query engines, speed readers, melody models, and EEG experiments.">
+</a>
+
+**This repo is [edwincortazo.com](https://edwincortazo.com)**: my experience, projects, and resume on one fast little page.
 
 [![Visit edwincortazo.com](https://img.shields.io/badge/visit-edwincortazo.com-111?style=for-the-badge&logo=googlechrome&logoColor=white)](https://edwincortazo.com)
 [![Resume](https://img.shields.io/badge/resume-PDF-444?style=for-the-badge&logo=adobeacrobatreader&logoColor=white)](public/Edwin_Cortazo_Resume.pdf)
@@ -23,15 +27,53 @@
 
 <sub>Switch GitHub between light and dark mode and the screenshot follows. Click it to open the live site.</sub>
 
-[Projects](#-projects) · [Run it locally](#-run-it-locally) · [How it's built](#-how-its-built) · [Deploys](#-deploys)
+[About me](#-about-me) · [Projects](#-projects) · [Run it locally](#-run-it-locally) · [How it's built](#-how-its-built) · [Deploys](#-deploys)
 
 </div>
 
 ---
 
+## 🙋 About me
+
+```ts
+const edwin = {
+  basedIn: 'New York 🗽',
+  speaks: ['TypeScript', 'Rust', 'Python', 'R', 'SQL'],
+  background: 'cognitive science → software',
+  likes: ['fast things', 'exact answers', 'showing the rows behind the number'],
+  lastSeen: 'at Sigma, making AI columns rerun on command',
+};
+```
+
+### 🧭 Pick your path
+
+| If you're... | Start here |
+| --- | --- |
+| 💼 Hiring | [Resume (PDF)](public/Edwin_Cortazo_Resume.pdf) or [the site](https://edwincortazo.com) |
+| 🦀 Into systems | [Receipts](https://edwin580.github.io/receipts-engine/): 7.1M rows, verified and traced in your browser |
+| 📚 Got a book to finish | [Chapter](https://edwin580.github.io/RSVP-Reader/): one word at a time, at your WPM |
+| 🎹 Feeling musical | [Music Generation](https://edwin580.github.io/music-generator/): give it a melody, it keeps going |
+| 🧠 A science nerd | [Does Morality Pop Out?](https://edwin580.github.io/EEG-Study-Replication/): I found a bug in the published analysis |
+
+<details>
+<summary><b>📊 By the numbers</b> (click me)</summary>
+
+| | |
+| ---: | --- |
+| **1,700+** | Lowe's stores running ProRange, which I built and shipped |
+| **75%** | less AI query latency at Sigma, from a cache and a schema-level index |
+| **7.1M** | rows Receipts loads and hash-checks in your browser in under 2 seconds |
+| **1e-12** | how closely my JavaScript GEE port matches R |
+| **196 + 67** | unit and end-to-end tests guarding Chapter |
+| **0 KB** | JavaScript this site sends to your browser |
+
+</details>
+
+---
+
 ## 🧪 Projects
 
-Click a preview to open the project. Expand **How it works** for the details.
+Things I built because I wanted them to exist. Click a preview to try one, or open a summary below to see how it works.
 
 <table>
   <tr>
@@ -201,5 +243,8 @@ GitHub Pages must be set to **Settings → Pages → Source: Deploy from a branc
 
 <div align="center">
 <br>
+
+**You scrolled all the way down. Let's talk!** ✌️
+
 <a href="mailto:edwincortazo@gmail.com">edwincortazo@gmail.com</a>
 </div>
