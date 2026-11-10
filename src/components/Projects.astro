@@ -12,7 +12,9 @@ const shots = new Map(Object.entries(files).map(([path, mod]) => [id(path), mod.
 
 // A short screen recording of each project, at src/assets/demos/<project id>.{mp4,webm} (see scripts/demos/).
 // H.264 MP4 plays almost everywhere; the VP9 WebM covers browsers built without H.264.
-// The screenshot is the poster, and stands in for the video when motion is reduced.
+// The screenshot is the poster, and stands in for the video when motion is reduced:
+// the sources carry that media query, so the clips aren't even downloaded then.
+const motion = '(prefers-reduced-motion: no-preference)';
 const clip = (files: Record<string, string>) => new Map(Object.entries(files).map(([path, url]) => [id(path), url]));
 const mp4 = clip(import.meta.glob<string>('../assets/demos/*.mp4', { eager: true, query: '?url', import: 'default' }));
 const webm = clip(import.meta.glob<string>('../assets/demos/*.webm', { eager: true, query: '?url', import: 'default' }));
@@ -35,8 +37,8 @@ const posters = new Map(
             <Image src={shots.get(p.id)!} alt="" widths={[480, 960, 1440]} sizes="(min-width: 64rem) 46rem, 100vw" />
             {demos.has(p.id) && (
               <video poster={posters.get(p.id)} autoplay muted loop playsinline preload="none">
-                {mp4.has(p.id) && <source src={mp4.get(p.id)} type="video/mp4" />}
-                {webm.has(p.id) && <source src={webm.get(p.id)} type="video/webm" />}
+                {mp4.has(p.id) && <source src={mp4.get(p.id)} type="video/mp4" media={motion} />}
+                {webm.has(p.id) && <source src={webm.get(p.id)} type="video/webm" media={motion} />}
               </video>
             )}
           </a>
