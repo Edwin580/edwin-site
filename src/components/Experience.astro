@@ -10,7 +10,7 @@ import { roles, dateRange } from '../data/profile';
           <div class="top">
             <h3>{r.org}</h3>
             <p class="muted dates">
-              <time datetime={r.start}>{dateRange(r)}</time>
+              <time datetime={r.start}>{dateRange(r).from}</time> – <time datetime={r.end}>{dateRange(r).to}</time>
             </p>
           </div>
           <p class="muted">

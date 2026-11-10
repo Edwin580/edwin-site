@@ -223,10 +223,9 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 
 const parts = (ym: YM) => ym.split('-').map(Number) as [number, number];
 
-/** "Jun – Aug 2026", or "Nov 2025 – May 2026" when the years differ. */
-export const dateRange = ({ start, end }: Pick<Role, 'start' | 'end'>): string => {
+/** The two ends of "Jun – Aug 2026", or of "Nov 2025 – May 2026" when the years differ. */
+export const dateRange = ({ start, end }: Pick<Role, 'start' | 'end'>): { from: string; to: string } => {
   const [sy, sm] = parts(start);
   const [ey, em] = parts(end);
-  const from = sy === ey ? MONTHS[sm - 1] : `${MONTHS[sm - 1]} ${sy}`;
-  return `${from} – ${MONTHS[em - 1]} ${ey}`;
+  return { from: sy === ey ? MONTHS[sm - 1]! : `${MONTHS[sm - 1]} ${sy}`, to: `${MONTHS[em - 1]} ${ey}` };
 };
