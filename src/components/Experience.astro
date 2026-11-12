@@ -4,33 +4,36 @@ import { roles, dateRange } from '../data/profile';
 
 <ol class="roles" role="list">
   {
-    roles.map((r) => (
-      <li class="role">
-        <div class="head">
-          <div class="top">
-            <h3>{r.org}</h3>
-            <p class="muted dates">
-              <time datetime={r.start}>{dateRange(r)}</time>
+    roles.map((r) => {
+      const [from, to] = dateRange(r);
+      return (
+        <li class="role">
+          <div class="head">
+            <div class="top">
+              <h3>{r.org}</h3>
+              <p class="muted dates">
+                <time datetime={r.start}>{from}</time> – <time datetime={r.end}>{to}</time>
+              </p>
+            </div>
+            <p class="muted">
+              {r.title}, {r.location}
             </p>
           </div>
-          <p class="muted">
-            {r.title}, {r.location}
-          </p>
-        </div>
-        <div class="body">
-          <ul class="points">
-            {r.highlights.map((h) => (
-              <li>{h}</li>
-            ))}
-          </ul>
-          <ul class="tags" role="list" aria-label="Stack">
-            {r.stack.map((t) => (
-              <li>{t}</li>
-            ))}
-          </ul>
-        </div>
-      </li>
-    ))
+          <div class="body">
+            <ul class="points">
+              {r.highlights.map((h) => (
+                <li>{h}</li>
+              ))}
+            </ul>
+            <ul class="tags" role="list" aria-label="Stack">
+              {r.stack.map((t) => (
+                <li>{t}</li>
+              ))}
+            </ul>
+          </div>
+        </li>
+      );
+    })
   }
 </ol>
 
@@ -61,16 +64,6 @@ import { roles, dateRange } from '../data/profile';
 
   .points {
     margin-top: 0.6rem;
-    padding-left: 1.1rem;
-    list-style-type: disc;
-  }
-
-  .points li + li {
-    margin-top: 0.3rem;
-  }
-
-  .points li::marker {
-    color: var(--muted);
   }
 
   .tags {
@@ -81,10 +74,6 @@ import { roles, dateRange } from '../data/profile';
   @media (max-width: 30rem) {
     .top {
       flex-direction: column;
-    }
-
-    .points {
-      padding-left: 1rem;
     }
   }
 

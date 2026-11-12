@@ -3,9 +3,10 @@
 My personal site: experience, projects, and resume on one page.
 
 - All content lives in `src/data/profile.ts`. Edit roles, projects, and links there.
-- The link-preview card is `src/assets/og.svg` (text only); it is rasterized to a JPEG at build time.
-  The `EC` icons in `public/` come from `public/favicon.svg`. Rerun `scripts/icon.mjs` after changing the icon.
-- Built with Astro as plain static HTML and CSS. It uses system fonts and ships no JavaScript.
+- The link-preview card is `src/assets/og.jpg`, rendered from `src/assets/og.svg` (text only).
+  The `EC` icons in `public/` come from `public/favicon.svg`. Rerun `scripts/images.mjs` after changing either SVG.
+- Built with Astro as plain static HTML and CSS, with system fonts. The only JavaScript is a few inline lines that
+  play each project video while it is on screen; without it the page shows the screenshots instead.
 
 ```sh
 npm install

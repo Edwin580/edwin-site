@@ -32,7 +32,7 @@ jobs:
           # Served at the root of the custom domain (Settings → Pages → Custom domain).
           SITE: https://edwincortazo.com
           BASE_PATH: /
-      - uses: JamesIves/github-pages-deploy-action@v4
+      - uses: JamesIves/github-pages-deploy-action@fa24774553152dd7873cd16ebd8d959b010c5445 # v4.9.0
         with:
           folder: dist
           branch: gh-pages
