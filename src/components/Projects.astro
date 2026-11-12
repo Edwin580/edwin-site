@@ -77,15 +77,12 @@ const posters = new Map(
   }
 
   .shot {
+    position: relative;
     display: block;
     margin-block: 0.6rem 0.75rem;
     overflow: hidden;
     border: 1px solid var(--rule);
     border-radius: 8px;
-  }
-
-  .shot {
-    position: relative;
   }
 
   /* The video sits over the screenshot, which still sets the size and shows until the video plays. */
@@ -96,11 +93,6 @@ const posters = new Map(
     height: 100%;
     object-fit: cover;
     object-position: top left;
-    transition: transform 0.2s ease;
-  }
-
-  .shot:hover video {
-    transform: scale(1.02);
   }
 
   .shot :global(img) {
@@ -109,25 +101,15 @@ const posters = new Map(
     aspect-ratio: 16 / 10;
     object-fit: cover;
     object-position: top left;
+  }
+
+  /* The screenshot and the video over it grow together on hover. */
+  .shot > :global(*) {
     transition: transform 0.2s ease;
   }
 
-  .shot:hover :global(img) {
+  .shot:hover > :global(*) {
     transform: scale(1.02);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .shot :global(img) {
-      transition: none;
-    }
-
-    .how summary::before {
-      transition: none;
-    }
-
-    .shot video {
-      display: none;
-    }
   }
 
   h3 {
@@ -181,16 +163,6 @@ const posters = new Map(
 
   .points {
     margin-top: 0.2rem;
-    padding-left: 1.1rem;
-    list-style-type: disc;
-  }
-
-  .points li + li {
-    margin-top: 0.3rem;
-  }
-
-  .points li::marker {
-    color: var(--muted);
   }
 
   .tags {
@@ -204,22 +176,6 @@ const posters = new Map(
     margin-top: 0.85rem;
   }
 
-  .button {
-    display: inline-flex;
-    align-items: center;
-    min-height: 2.25rem;
-    padding: 0 0.85rem;
-    border: 1px solid var(--button-border);
-    border-radius: 6px;
-    font-size: 0.9375rem;
-    font-weight: 500;
-    text-decoration: none;
-  }
-
-  .button:hover {
-    border-color: var(--text);
-  }
-
   .primary {
     border-color: var(--text);
     background: var(--text);
@@ -230,9 +186,19 @@ const posters = new Map(
     opacity: 0.85;
   }
 
-  @media (max-width: 30rem) {
-    .points {
-      padding-left: 1rem;
+  /* Kept after the rules it overrides: same specificity, so the later one wins. */
+  @media (prefers-reduced-motion: reduce) {
+    .shot > :global(*),
+    .how summary::before {
+      transition: none;
+    }
+
+    .shot:hover > :global(*) {
+      transform: none;
+    }
+
+    .shot video {
+      display: none;
     }
   }
 

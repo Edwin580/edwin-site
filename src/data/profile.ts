@@ -1,10 +1,10 @@
 /** Everything the site shows lives here. */
 
 /** Year and month, e.g. "2025-05". */
-export type YM = `${number}-${string}`;
+type Month = '01' | '02' | '03' | '04' | '05' | '06' | '07' | '08' | '09' | '10' | '11' | '12';
+export type YM = `${number}-${Month}`;
 
 export interface Role {
-  id: string;
   org: string;
   title: string;
   location: string;
@@ -42,7 +42,6 @@ export const profile = {
 
 export const roles: Role[] = [
   {
-    id: 'sigma',
     org: 'Sigma',
     title: 'Software Engineer Intern',
     location: 'New York, NY',
@@ -60,7 +59,6 @@ export const roles: Role[] = [
     stack: ['TypeScript', 'React', 'SQL'],
   },
   {
-    id: 'zwilling',
     org: 'Zwilling J.A. Henckels',
     title: 'Data Science Intern',
     location: 'New York, NY',
@@ -73,7 +71,6 @@ export const roles: Role[] = [
     stack: ['Python', 'PostgreSQL', 'TypeScript', 'React'],
   },
   {
-    id: 'bucherer',
     org: 'Bucherer 1888',
     title: 'Data Management Intern',
     location: 'New York, NY',
@@ -86,7 +83,6 @@ export const roles: Role[] = [
     stack: ['Python', 'pandas'],
   },
   {
-    id: 'lowes',
     org: 'Lowe’s',
     title: 'Software Engineer Intern',
     location: 'Charlotte, NC',
@@ -99,7 +95,6 @@ export const roles: Role[] = [
     stack: ['React', 'Kotlin', 'Java', 'Spring Boot'],
   },
   {
-    id: 'vassar',
     org: 'Vassar College',
     title: 'Cognitive Science Programmer',
     location: 'Poughkeepsie, NY',
@@ -112,7 +107,6 @@ export const roles: Role[] = [
     stack: ['JavaScript', 'jsPsych', 'Python'],
   },
   {
-    id: 'seo',
     org: 'Sponsors for Educational Opportunity',
     title: 'Tech Developer Intern',
     location: 'New York, NY',
@@ -223,10 +217,9 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 
 const parts = (ym: YM) => ym.split('-').map(Number) as [number, number];
 
-/** "Jun – Aug 2026", or "Nov 2025 – May 2026" when the years differ. */
-export const dateRange = ({ start, end }: Pick<Role, 'start' | 'end'>): string => {
+/** ["Jun", "Aug 2026"], or ["Nov 2025", "May 2026"] when the years differ. */
+export const dateRange = ({ start, end }: Pick<Role, 'start' | 'end'>): [from: string, to: string] => {
   const [sy, sm] = parts(start);
   const [ey, em] = parts(end);
-  const from = sy === ey ? MONTHS[sm - 1] : `${MONTHS[sm - 1]} ${sy}`;
-  return `${from} – ${MONTHS[em - 1]} ${ey}`;
+  return [sy === ey ? MONTHS[sm - 1]! : `${MONTHS[sm - 1]} ${sy}`, `${MONTHS[em - 1]} ${ey}`];
 };

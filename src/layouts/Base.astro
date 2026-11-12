@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import { getImage } from 'astro:assets';
 import { profile } from '../data/profile';
+import { base } from '../data/paths';
 import card from '../assets/og.svg';
 
 const title = `${profile.name} · ${profile.role}`;
@@ -10,8 +11,6 @@ const description = `${profile.name} is a ${profile.role.toLowerCase()} in ${pro
 const canonical = new URL(Astro.url.pathname, Astro.site);
 // Set by the Preview workflow; production builds leave both empty.
 const preview = process.env.PREVIEW ? (process.env.PR_NUMBER ?? '') : null;
-
-const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
 // The 1200x630 card fills link previews (LinkedIn, iMessage, Slack) without cropping.
 // It is text only (src/assets/og.svg), rasterized to a JPEG here at build time.
