@@ -1,9 +1,8 @@
 ---
 import '../styles/global.css';
-import { getImage } from 'astro:assets';
 import { profile } from '../data/profile';
 import { base } from '../data/paths';
-import card from '../assets/og.svg';
+import card from '../assets/og.jpg';
 
 const title = `${profile.name} · ${profile.role}`;
 const description = `${profile.name} is a ${profile.role.toLowerCase()} in ${profile.location}. Experience, projects, and resume.`;
@@ -13,10 +12,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 const preview = process.env.PREVIEW ? (process.env.PR_NUMBER ?? '') : null;
 
 // The 1200x630 card fills link previews (LinkedIn, iMessage, Slack) without cropping.
-// It is text only (src/assets/og.svg), rasterized to a JPEG here at build time.
-// LinkedIn caches images by URL, so changing this changes what it fetches.
-const og = await getImage({ src: card, format: 'jpg', quality: 90 });
-const ogUrl = new URL(og.src, Astro.site).href;
+// It is rendered ahead of time from src/assets/og.svg (scripts/images.mjs), so its fonts never depend on the build machine.
+// LinkedIn caches images by URL; the URL carries a content hash, so a new card is fetched afresh.
+const ogUrl = new URL(card.src, Astro.site).href;
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -53,8 +51,8 @@ const jsonLd = {
     <meta property="og:image" content={ogUrl} />
     <meta property="og:image:secure_url" content={ogUrl} />
     <meta property="og:image:type" content="image/jpeg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    <meta property="og:image:width" content={String(card.width)} />
+    <meta property="og:image:height" content={String(card.height)} />
     <meta property="og:image:alt" content={`${profile.name}, ${profile.role.toLowerCase()} in ${profile.location}`} />
     <meta name="twitter:card" content="summary_large_image" />
 

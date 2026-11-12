@@ -7,7 +7,6 @@
   --rule: #e4e4e1;
   --underline: #b5b5b0;
   --button-border: #cfcfca;
-  --tag-bg: #f1f1ee;
 
   --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --width: 38rem;
@@ -22,7 +21,6 @@
     --rule: #2c2c2c;
     --underline: #5e5e5e;
     --button-border: #474747;
-    --tag-bg: #1f1f1f;
   }
 }
 
@@ -40,6 +38,12 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
@@ -81,26 +85,27 @@ ol[role='list'] {
   color: var(--muted);
 }
 
-/* Tech stack chips, shared by roles and projects. */
+/* Tech stack, shared by roles and projects: one quiet line, separated by dots. */
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.375rem;
+  color: var(--muted);
+  font-size: 0.875rem;
 }
 
-.tags li {
-  padding: 0.1rem 0.5rem;
-  border-radius: 4px;
-  background: var(--tag-bg);
-  color: var(--muted);
-  font-size: 0.8125rem;
-  line-height: 1.6;
+.tags li:not(:last-child)::after {
+  content: '·';
+  margin-inline: 0.5em;
 }
 
 /* Bulleted highlights, shared by roles and projects. */
 .points {
   padding-left: 1.1rem;
   list-style-type: disc;
+}
+
+.points li {
+  text-wrap: pretty;
 }
 
 .points li + li {
@@ -154,19 +159,6 @@ ol[role='list'] {
     --bg: #fff;
     --text: #000;
     --muted: #444;
-    --tag-bg: transparent;
-  }
-
-  .tags {
-    column-gap: 0;
-  }
-
-  .tags li {
-    padding: 0;
-  }
-
-  .tags li + li::before {
-    content: ', ';
   }
 
   a {
