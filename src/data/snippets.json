@@ -1,0 +1,44 @@
+{
+  "receipts": {
+    "lang": "rust",
+    "path": "crates/receipts-cf/src/lib.rs",
+    "href": "https://github.com/Edwin580/receipts-engine/blob/6ac7b31cc240fa808d7c28f43d665186ee06672c/crates/receipts-cf/src/lib.rs#L521-L535",
+    "source": "/// The `p`th percentile without each member, given the non-null\n/// `(value, position)` pairs in the executor's order. Removing a value\n/// shifts the rank by one place at most, and it always picks a value, so\n/// the result is exact.\nfn percentile_without(sorted: &[(CfValue, usize)], n: usize, p: u8) -> Vec<CfValue> {\n    let all = percentile_rank(sorted.len(), p).map_or(CfValue::Null, |r| sorted[r].0);\n    let mut out = vec![all; n];\n    let rest = sorted.len().saturating_sub(1);\n    for (rank, (_, pos)) in sorted.iter().enumerate() {\n        out[*pos] = percentile_rank(rest, p).map_or(CfValue::Null, |r| {\n            sorted[if r < rank { r } else { r + 1 }].0\n        });\n    }\n    out\n}"
+  },
+  "chapter": {
+    "lang": "ts",
+    "path": "src/hooks/useRsvp.ts",
+    "href": "https://github.com/Edwin580/RSVP-Reader/blob/8672d1da23bac14d1ace6c52363a258ec00b5219/src/hooks/useRsvp.ts#L43-L63",
+    "source": "const now = performance.now()\nif (!clock.current || clock.current.index !== index || now - clock.current.at > MAX_LAG_MS) {\n  clock.current = { index, at: now }\n}\nconst duration =\n  (60000 / wpm) * (weights[index] ?? 1) * (RAMP_UP[sincePlay.current] ?? 1) + (extraDelay?.(index) ?? 0)\nconst due = clock.current.at + duration\nconst timer = window.setTimeout(() => {\n  sincePlay.current++\n  if (index >= count - 1) {\n    setPlaying(false)\n    return\n  }\n  if (stopAt !== undefined && index === stopAt) {\n    setPlaying(false)\n    stopped.current?.()\n    return\n  }\n  clock.current = { index: index + 1, at: due }\n  setIndexState(index + 1)\n}, Math.max(0, due - performance.now()))"
+  },
+  "stems": {
+    "lang": "ts",
+    "path": "src/engine/align.ts",
+    "href": "https://github.com/Edwin580/stems/blob/6a5520626121c2eb3d2ecab3f782d0b7fe19e8a7/src/engine/align.ts#L47-L57",
+    "source": "function ncc(a: Float32Array, aOff: number, b: Float32Array, bOff: number, len: number): number {\n  let ab = 0, aa = 0, bb = 0;\n  for (let i = 0; i < len; i++) {\n    const ai = aOff + i, bi = bOff + i;\n    const x = ai >= 0 && ai < a.length ? a[ai] : 0;\n    const y = bi >= 0 && bi < b.length ? b[bi] : 0;\n    ab += x * y; aa += x * x; bb += y * y;\n  }\n  const den = Math.sqrt(aa * bb);\n  return den > 1e-12 ? ab / den : 0;\n}"
+  },
+  "music-generation": {
+    "lang": "js",
+    "path": "docs/js/model.js",
+    "href": "https://github.com/Edwin580/music-generator/blob/178b713498c2a0e14a113afe78423bb6838bf971/docs/js/model.js#L134-L153",
+    "source": "const scale = 1 / Math.sqrt(hd);\nconst scores = state.scores;\nfor (let hIdx = 0; hIdx < H; hIdx++) {\n  const o = hIdx * hd;\n  let max = -Infinity;\n  for (let j = 0; j < n; j++) {\n    let s = 0;\n    const base = j * d + o;\n    for (let i = 0; i < hd; i++) s += q[o + i] * ks[base + i];\n    scores[j] = s * scale;\n    if (scores[j] > max) max = scores[j];\n  }\n  let sum = 0;\n  for (let j = 0; j < n; j++) { scores[j] = Math.exp(scores[j] - max); sum += scores[j]; }\n  this.att.fill(0, o, o + hd);\n  for (let j = 0; j < n; j++) {\n    const wj = scores[j] / sum, base = j * d + o;\n    for (let i = 0; i < hd; i++) this.att[o + i] += wj * vs[base + i];\n  }\n}"
+  },
+  "morality-pop-out": {
+    "lang": "js",
+    "path": "docs/site/js/stats.js",
+    "href": "https://github.com/Edwin580/EEG-Study-Replication/blob/2a228b848b8e3318ab8527282286af15200db9e8/docs/site/js/stats.js#L105-L119",
+    "source": "betaOld = beta;\nconst all = clusters.map((c) => clusterTerms(c, beta, fam));\nlet ss = 0, cross = 0, exdiv = 0;\nfor (const terms of all) {\n  const ni = terms.reduce((acc, t) => acc + t.n, 0);\n  const e = terms.reduce((acc, t) => acc + t.e, 0);\n  const sq = terms.reduce((acc, t) => acc + t.ss, 0);\n  ss += sq;\n  if (!trialClusters && ni > 1) {\n    cross += e * e - sq;           // sum over j != k of e_j e_k\n    exdiv += ni * (ni - 1);\n  }\n}\nphi = ss / (N - p);\nalpha = trialClusters ? 0 : cross / (phi * (exdiv - 2 * p));"
+  },
+  "brightness-perception": {
+    "lang": "js",
+    "path": "src/plugin-word-probe.js",
+    "href": "https://github.com/Edwin580/Prolific-Experiment/blob/49c1a1bda401f9d6d0d204d448a3c2c38128d676/src/plugin-word-probe.js#L109-L125",
+    "source": "// A display change is committed if the upcoming frame would land at or\n// past the target, so we switch when less than half a frame remains.\nconst halfFrame = () => (frames.length ? median(frames) / 2 : 8);\n\nconst tick = (now) => {\n  if (ended) return;\n  if (lastFrame !== null) frames.push(now - lastFrame);\n  lastFrame = now;\n\n  if (phase === \"fixation\") {\n    if (t.fixation === null) t.fixation = now;\n    else if (now - t.fixation >= trial.fixation_duration - halfFrame()) showWord(now);\n  } else if (phase === \"word\") {\n    if (now - t.word >= trial.word_duration - halfFrame()) showProbe(now);\n  }\n  if (phase === \"fixation\" || phase === \"word\") rafId = requestAnimationFrame(tick);\n};"
+  },
+  "better-video": {
+    "lang": "rust",
+    "path": "crates/bv-engine/src/raw.rs",
+    "href": "https://github.com/Edwin580/better-video/blob/71d20ee9d95363377d31e0029d26f4181c92b03e/crates/bv-engine/src/raw.rs#L108-L137",
+    "source": "for i in 0..tile_count(w, h) {\n    let (x, y, tw, th) = tile_rect(i, w, h);\n    // A band of tiles is a contiguous run of rows: when it hasn't\n    // changed at all (most of a typical screen), one comparison\n    // settles every tile in it.\n    if !first && x == 0 {\n        let band = y * w * 4..(y + th) * w * 4;\n        if bgra[band.clone()] == self.prev[band] {\n            // Skip to the next band's first tile.\n            skip_to = i + cols;\n        }\n    }\n    if i < skip_to {\n        continue;\n    }\n    let rows = (y..y + th).map(|r| (r * w + x) * 4..(r * w + x + tw) * 4);\n    let changed = first\n        || rows\n            .clone()\n            .any(|span| bgra[span.clone()] != self.prev[span]);\n    if changed {\n        self.payload.extend_from_slice(&(i as u32).to_le_bytes());\n        for span in rows {\n            self.payload.extend_from_slice(&bgra[span.clone()]);\n            if !first {\n                self.prev[span.clone()].copy_from_slice(&bgra[span]);\n            }\n        }\n    }\n}"
+  }
+}

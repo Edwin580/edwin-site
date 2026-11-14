@@ -1,7 +1,10 @@
 ---
 import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
+import { Code } from 'astro:components';
 import { projects } from '../data/profile';
+// Excerpts copied from each project's repository by scripts/snippets.mjs.
+import snippets from '../data/snippets.json';
 
 // A screenshot of each project, at src/assets/projects/<project id>.{png,jpg,webp}.
 const files = import.meta.glob<{ default: ImageMetadata }>('../assets/projects/*.{png,jpg,jpeg,webp}', {
@@ -18,6 +21,15 @@ const clip = (files: Record<string, string>) => new Map(Object.entries(files).ma
 const mp4 = clip(import.meta.glob<string>('../assets/demos/*.mp4', { eager: true, query: '?url', import: 'default' }));
 const webm = clip(import.meta.glob<string>('../assets/demos/*.webm', { eager: true, query: '?url', import: 'default' }));
 const demos = new Set([...mp4.keys(), ...webm.keys()]);
+
+const excerpts: Record<string, { lang: string; path: string; href: string; source: string }> = snippets;
+// The four things to open under each project. Each is a button that shows its panel; the open one closes again.
+const panels = [
+  ['how', 'How it works'],
+  ['arch', 'Architecture'],
+  ['code', 'Code'],
+  ['bench', 'Benchmarks'],
+] as const;
 ---
 
 <ul class="projects" role="list">
@@ -38,16 +50,111 @@ const demos = new Set([...mp4.keys(), ...webm.keys()]);
           </a>
         )}
         <p class="muted summary">{p.summary}</p>
-        <details class="how">
-          <summary>How it works</summary>
-          <ul class="points">
-            {p.highlights.map((h) => (
-              <li>{h}</li>
+        <dl class="figures">
+          {p.figures.map((f) => (
+            <div>
+              <dt>{f.label}</dt>
+              <dd>{f.value}</dd>
+            </div>
+          ))}
+        </dl>
+        <div class="hood">
+          <div class="tabs" role="group" aria-label={`Under the hood: ${p.name}`}>
+            {panels.map(([key, label]) => (
+              <button type="button" aria-expanded="false" aria-controls={`${p.id}-${key}`}>
+                {label}
+                <span class="sr-only">: {p.name}</span>
+              </button>
             ))}
-          </ul>
-        </details>
+          </div>
+
+          <section class="panel" id={`${p.id}-how`}>
+            <h4>How it works</h4>
+            <ul class="points">
+              {p.highlights.map((h) => (
+                <li>{h}</li>
+              ))}
+            </ul>
+          </section>
+
+          <section class="panel" id={`${p.id}-arch`}>
+            <h4>Architecture</h4>
+            <ol class="flow" role="list" aria-label="Data flow, in order">
+              {p.flow.map((step) => (
+                <li>
+                  <span class="step">{step.name}</span>
+                  <span class="note">{step.note}</span>
+                  {step.where && <span class="where">{step.where}</span>}
+                </li>
+              ))}
+            </ol>
+            <h5>Hard parts</h5>
+            <dl class="problems">
+              {p.problems.map((x) => (
+                <div>
+                  <dt>{x.title}</dt>
+                  <dd>{x.body}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+
+          <section class="panel" id={`${p.id}-code`}>
+            <h4>Code</h4>
+            <p class="lede">
+              <strong>{p.code.title}.</strong> {p.code.note}
+            </p>
+            {/* Focusable, so a keyboard can scroll a long line into view. */}
+            <div class="listing" tabindex="0" role="region" aria-label={`Source: ${excerpts[p.id]!.path}`}>
+              <Code
+                code={excerpts[p.id]!.source}
+                lang={excerpts[p.id]!.lang as 'rust'}
+                themes={{ light: 'github-light', dark: 'github-dark' }}
+                defaultColor={false}
+              />
+            </div>
+            <p class="from">
+              <a href={excerpts[p.id]!.href}>{excerpts[p.id]!.path}</a>, as it is in the repository.
+            </p>
+          </section>
+
+          <section class="panel" id={`${p.id}-bench`}>
+            <h4>Benchmarks</h4>
+            {/* Scrolls sideways on its own if a phone is narrower than the table. */}
+            <div class="table" tabindex="0" role="region" aria-label={`Benchmarks: ${p.name}`}>
+              <table>
+                <caption>{p.bench.caption}</caption>
+                <thead>
+                  <tr>
+                    {p.bench.columns.map((c, i) =>
+                      c ? <th scope="col">{c}</th> : <td>{i === 0 && <span class="sr-only">Measure</span>}</td>,
+                    )}
+                  </tr>
+                </thead>
+                <tbody>
+                  {p.bench.rows.map(([measure, ...values]) => (
+                    <tr>
+                      <th scope="row">{measure}</th>
+                      {values.map((v) => (
+                        <td>{v}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p class="from">
+              {p.bench.note} <a href={p.bench.source}>Where these numbers come from</a>.
+            </p>
+          </section>
+        </div>
         <ul class="tags" role="list" aria-label="Stack">
           {p.stack.map((t) => (
+            <li>{t}</li>
+          ))}
+        </ul>
+        <ul class="tags tests" role="list" aria-label="Tested with">
+          {p.tests.map((t) => (
             <li>{t}</li>
           ))}
         </ul>
@@ -77,12 +184,39 @@ const demos = new Set([...mp4.keys(), ...webm.keys()]);
     });
     document.querySelectorAll('.shot video').forEach((video) => seen.observe(video));
   }
+
+  // Under the hood: each button opens its panel and closes the others; the open one closes again.
+  // Without this script every panel is simply on the page, one after another.
+  document.querySelectorAll('.hood').forEach((hood) => {
+    const buttons = [...hood.querySelectorAll('.tabs button')];
+    const panel = (button) => document.getElementById(button.getAttribute('aria-controls'));
+    const show = (open) => {
+      for (const button of buttons) {
+        button.setAttribute('aria-expanded', String(button === open));
+        panel(button).hidden = button !== open;
+      }
+    };
+    hood.classList.add('tabbed');
+    show(null);
+    for (const button of buttons) {
+      button.addEventListener('click', () => show(button.getAttribute('aria-expanded') === 'true' ? null : button));
+    }
+  });
+  // Printing shows everything, whatever was open.
+  addEventListener('beforeprint', () => document.querySelectorAll('.hood .panel').forEach((p) => (p.hidden = false)));
+  addEventListener('afterprint', () =>
+    document.querySelectorAll('.hood .tabs button').forEach((b) => {
+      document.getElementById(b.getAttribute('aria-controls')).hidden = b.getAttribute('aria-expanded') !== 'true';
+    }),
+  );
 </script>
 
 <style>
+  /* minmax(0, …): a long line of code scrolls inside its own box instead of widening the column. */
   .projects {
     display: grid;
-    gap: 3rem;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3.5rem;
   }
 
   .shot {
@@ -131,28 +265,65 @@ const demos = new Set([...mp4.keys(), ...webm.keys()]);
     text-wrap: pretty;
   }
 
-  .how {
-    margin-top: 0.6rem;
+  /* Three measured numbers: the figure large, what it measures small under it. */
+  .figures {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem 1.25rem;
+    margin-top: 0.9rem;
+    padding-block: 0.8rem;
+    border-block: 1px solid var(--rule);
   }
 
-  .how summary {
-    width: fit-content;
-    min-height: 2.25rem;
+  .figures div {
     display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+  }
+
+  .figures dd {
+    font-size: 1.1875rem;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .figures dt {
+    margin-top: 0.15rem;
+    color: var(--muted);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    text-wrap: pretty;
+  }
+
+  /* Under the hood */
+
+  .hood {
+    margin-top: 0.75rem;
+  }
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.15rem 1.1rem;
+  }
+
+  .tabs button {
+    display: inline-flex;
     align-items: center;
     gap: 0.4rem;
+    min-height: 2.75rem;
+    border: 0;
+    background: none;
     color: var(--muted);
+    font: inherit;
     font-size: 0.9375rem;
     font-weight: 500;
     cursor: pointer;
-    list-style: none;
   }
 
-  .how summary::-webkit-details-marker {
-    display: none;
-  }
-
-  .how summary::before {
+  .tabs button::before {
     content: '';
     width: 0.4rem;
     height: 0.4rem;
@@ -162,20 +333,221 @@ const demos = new Set([...mp4.keys(), ...webm.keys()]);
     transition: transform 0.15s ease;
   }
 
-  .how[open] summary::before {
-    transform: rotate(45deg);
-  }
-
-  .how summary:hover {
+  .tabs button[aria-expanded='true'] {
     color: var(--text);
   }
 
-  .points {
-    margin-top: 0.2rem;
+  .tabs button[aria-expanded='true']::before {
+    transform: rotate(45deg);
+  }
+
+  .tabs button:hover {
+    color: var(--text);
+  }
+
+  /* Until the script runs (or if it never does) the buttons have nothing to do: the panels are all shown, each under its heading. */
+  .hood:not(.tabbed) .tabs,
+  .hood.tabbed h4 {
+    display: none;
+  }
+
+  .panel {
+    padding-block: 0.35rem 0.9rem;
+  }
+
+  .hood:not(.tabbed) .panel {
+    padding-top: 1rem;
+  }
+
+  h4 {
+    margin-bottom: 0.5rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  h5 {
+    margin-block: 1.25rem 0.5rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  /* The data's path as numbered boxes: across on a wide screen, down on a phone, with an arrow from each to the next. */
+  .flow {
+    counter-reset: step;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+    gap: 0.6rem 1.4rem;
+  }
+
+  .flow li {
+    counter-increment: step;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.55rem 0.7rem 0.65rem;
+    border: 1px solid var(--button-border);
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+
+  .flow .step {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .flow .step::before {
+    content: counter(step) ' ';
+    color: var(--muted);
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .flow .note {
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  /* Where a stage runs, when it isn't the obvious place. */
+  .flow .where {
+    align-self: flex-start;
+    margin-top: 0.3rem;
+    padding: 0 0.4rem;
+    border-radius: 3px;
+    background: var(--rule);
+    font-size: 0.75rem;
+  }
+
+  .flow li:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    width: 1.4rem;
+    color: var(--muted);
+    text-align: center;
+    transform: translateY(-50%);
+  }
+
+  .problems {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .problems dt {
+    font-weight: 600;
+  }
+
+  .problems dd {
+    text-wrap: pretty;
+  }
+
+  .lede {
+    text-wrap: pretty;
+  }
+
+  .listing,
+  .table {
+    overflow-x: auto;
+    margin-top: 0.7rem;
+  }
+
+  .listing {
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+  }
+
+  .listing :global(pre) {
+    width: max-content;
+    min-width: 100%;
+    margin: 0;
+    padding: 0.8rem 0.9rem;
+    background: none !important;
+    font:
+      0.8125rem/1.55 ui-monospace,
+      SFMono-Regular,
+      Menlo,
+      Consolas,
+      monospace;
+    tab-size: 2;
+  }
+
+  .listing :global(pre span) {
+    color: var(--shiki-light);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .listing :global(pre span) {
+      color: var(--shiki-dark);
+    }
+  }
+
+  .from {
+    margin-top: 0.6rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+    text-wrap: pretty;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  caption {
+    padding-bottom: 0.5rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+    text-align: left;
+    text-wrap: pretty;
+  }
+
+  th,
+  td {
+    padding: 0.4rem 0.9rem 0.4rem 0;
+    border-bottom: 1px solid var(--rule);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  thead th {
+    color: var(--muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  tbody th {
+    font-weight: 400;
+  }
+
+  tbody td {
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  th:last-child,
+  td:last-child {
+    padding-right: 0;
   }
 
   .tags {
     margin-top: 0.75rem;
+  }
+
+  /* The second line says how it is tested. */
+  .tests {
+    margin-top: 0.15rem;
+  }
+
+  .tests::before {
+    content: 'Tested with';
+    margin-right: 0.5em;
   }
 
   .actions {
@@ -195,10 +567,58 @@ const demos = new Set([...mp4.keys(), ...webm.keys()]);
     opacity: 0.85;
   }
 
+  /* Phones: the figures and the flow run down the page, each arrow pointing down. */
+  @media (max-width: 36rem) {
+    .figures {
+      grid-template-columns: 1fr;
+      gap: 0.6rem;
+    }
+
+    .figures div {
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+      align-items: baseline;
+      gap: 0.75rem;
+    }
+
+    .figures dd {
+      flex: none;
+      min-width: 6.5rem;
+      font-size: 1.0625rem;
+    }
+
+    .figures dt {
+      margin-top: 0;
+      font-size: 0.875rem;
+    }
+
+    .flow {
+      grid-template-columns: 1fr;
+      gap: 1.3rem;
+    }
+
+    .flow li:not(:last-child)::after {
+      content: '↓';
+      left: 0;
+      top: 100%;
+      width: 100%;
+      height: 1.3rem;
+      line-height: 1.3rem;
+      transform: none;
+    }
+
+    /* Four buttons don't fit on one line, and three and one looks like a mistake. */
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0 1rem;
+    }
+  }
+
   /* Kept after the rules it overrides: same specificity, so the later one wins. */
   @media (prefers-reduced-motion: reduce) {
     .shot > :global(*),
-    .how summary::before {
+    .tabs button::before {
       transition: none;
     }
 
@@ -218,13 +638,12 @@ const demos = new Set([...mp4.keys(), ...webm.keys()]);
 
     .shot,
     .actions,
-    .how summary {
+    .tabs {
       display: none;
     }
 
-    /* Print the bullets whether or not the dropdown is open. */
-    .how::details-content {
-      content-visibility: visible;
+    .hood.tabbed h4 {
+      display: block;
     }
   }
 </style>

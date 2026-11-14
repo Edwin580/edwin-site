@@ -22,7 +22,6 @@ await m.click('button:has-text("Why had the")', 700); await wait(900);
 // Page mode with a pacer and line focus, in sepia.
 await m.click('button:has-text("Aa")', 700); await wait(400);
 await menu('Page'); await wait(500);
-await menu('Both'); await wait(300);
 await menu('1 line'); await wait(300);
 await menu('Sepia'); await wait(500);
 await page.keyboard.press('Escape'); await wait(500);
